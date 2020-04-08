@@ -1,5 +1,5 @@
 # CPSC-471-RestaurantAPI
-A CPSC 471 Project offering a simple Restaurant API system using Njs, Express and MySQL
+A CPSC 471 Project offering a simple Restaurant API system using Njs, Express and MySQL.
 
 # Installing the Project
 1. git clone the repository
