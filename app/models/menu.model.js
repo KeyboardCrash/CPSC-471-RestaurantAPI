@@ -9,11 +9,20 @@ const Menu = function(menu) {
 };
 
 Menu.findById = (menuId, result) => {
-
+  sql.query(`SELECT * FROM menu WHERE versionId=${menuId}`, (err, res) => {
+    if (err)
+    {
+      console.log("error: ". error);
+      result(null, err);
+      return;
+    }
+    console.log("Menu " + menuId, res);
+    result(null, res);
+  });
 };
 
 Menu.getAll = result => {
-  sql.query("SELECT * FROM menus", (err, res) => {
+  sql.query("SELECT * FROM menu", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

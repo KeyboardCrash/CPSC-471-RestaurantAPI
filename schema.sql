@@ -18,6 +18,24 @@ USE `restaurantdb`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `branch`
+--
+
+DROP TABLE IF EXISTS `branch`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `branch` (
+  `branchID` int NOT NULL,
+  `menuVersionId` varchar(45) NOT NULL,
+  `ownerSSN` int NOT NULL,
+  PRIMARY KEY (`branchID`,`ownerSSN`),
+  UNIQUE KEY `branchID_UNIQUE` (`branchID`),
+  KEY `SSN_idx` (`ownerSSN`),
+  CONSTRAINT `SSN` FOREIGN KEY (`ownerSSN`) REFERENCES `owner` (`SSN`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `customer_phone`
 --
 
@@ -31,15 +49,6 @@ CREATE TABLE `customer_phone` (
   CONSTRAINT `phoneCustomerId` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `customer_phone`
---
-
-LOCK TABLES `customer_phone` WRITE;
-/*!40000 ALTER TABLE `customer_phone` DISABLE KEYS */;
-/*!40000 ALTER TABLE `customer_phone` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `customers`
@@ -58,15 +67,6 @@ CREATE TABLE `customers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `customers`
---
-
-LOCK TABLES `customers` WRITE;
-/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `cutomer_address`
 --
 
@@ -80,15 +80,6 @@ CREATE TABLE `cutomer_address` (
   CONSTRAINT `customerIdAdress` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cutomer_address`
---
-
-LOCK TABLES `cutomer_address` WRITE;
-/*!40000 ALTER TABLE `cutomer_address` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cutomer_address` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `dish`
@@ -108,13 +99,29 @@ CREATE TABLE `dish` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `dish`
+-- Table structure for table `employee`
 --
 
-LOCK TABLES `dish` WRITE;
-/*!40000 ALTER TABLE `dish` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dish` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `employee`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `employee` (
+  `SSN` int NOT NULL,
+  `branchID` int NOT NULL,
+  `position` varchar(45) NOT NULL,
+  `yearsOfExperience` int NOT NULL,
+  `phone` varchar(45) NOT NULL,
+  `salary` float NOT NULL,
+  `city` varchar(45) NOT NULL,
+  `zipCode` varchar(45) NOT NULL,
+  `fName` varchar(45) NOT NULL,
+  `lName` varchar(45) NOT NULL,
+  PRIMARY KEY (`SSN`),
+  UNIQUE KEY `SSN_UNIQUE` (`SSN`),
+  KEY `branchID_idx` (`branchID`),
+  CONSTRAINT `branchID` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `in_restaurant`
@@ -131,13 +138,53 @@ CREATE TABLE `in_restaurant` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `in_restaurant`
+-- Table structure for table `information`
 --
 
-LOCK TABLES `in_restaurant` WRITE;
-/*!40000 ALTER TABLE `in_restaurant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `in_restaurant` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `information`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `information` (
+  `branchId` int NOT NULL,
+  `menu` varchar(45) NOT NULL,
+  `typeOfCuisine` varchar(45) NOT NULL,
+  `location` varchar(45) NOT NULL,
+  PRIMARY KEY (`branchId`),
+  UNIQUE KEY `branchId_UNIQUE` (`branchId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `information_contactinfo`
+--
+
+DROP TABLE IF EXISTS `information_contactinfo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `information_contactinfo` (
+  `branchID` int NOT NULL,
+  `phoneNumber` int NOT NULL,
+  `website` varchar(45) DEFAULT NULL,
+  KEY `branchID` (`branchID`),
+  CONSTRAINT `branchID_c` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `information_timesopen`
+--
+
+DROP TABLE IF EXISTS `information_timesopen`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `information_timesopen` (
+  `branchID` int NOT NULL,
+  `weekDay` varchar(45) NOT NULL,
+  `timeOpen` time NOT NULL,
+  `timeClose` time NOT NULL,
+  PRIMARY KEY (`branchID`,`weekDay`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `listed_in`
@@ -155,15 +202,6 @@ CREATE TABLE `listed_in` (
   CONSTRAINT `listMenuVerId` FOREIGN KEY (`menuVersionId`) REFERENCES `menu` (`versionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `listed_in`
---
-
-LOCK TABLES `listed_in` WRITE;
-/*!40000 ALTER TABLE `listed_in` DISABLE KEYS */;
-/*!40000 ALTER TABLE `listed_in` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `membership`
@@ -185,15 +223,6 @@ CREATE TABLE `membership` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `membership`
---
-
-LOCK TABLES `membership` WRITE;
-/*!40000 ALTER TABLE `membership` DISABLE KEYS */;
-/*!40000 ALTER TABLE `membership` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `menu`
 --
 
@@ -208,15 +237,6 @@ CREATE TABLE `menu` (
   PRIMARY KEY (`versionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `menu`
---
-
-LOCK TABLES `menu` WRITE;
-/*!40000 ALTER TABLE `menu` DISABLE KEYS */;
-/*!40000 ALTER TABLE `menu` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `mobile`
@@ -234,15 +254,6 @@ CREATE TABLE `mobile` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `mobile`
---
-
-LOCK TABLES `mobile` WRITE;
-/*!40000 ALTER TABLE `mobile` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mobile` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `online`
 --
 
@@ -256,15 +267,6 @@ CREATE TABLE `online` (
   CONSTRAINT `onlineBillNo` FOREIGN KEY (`orderBillingNo`) REFERENCES `order` (`billingNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `online`
---
-
-LOCK TABLES `online` WRITE;
-/*!40000 ALTER TABLE `online` DISABLE KEYS */;
-/*!40000 ALTER TABLE `online` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `order`
@@ -287,17 +289,38 @@ CREATE TABLE `order` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `order`
+-- Table structure for table `owner`
 --
 
-LOCK TABLES `order` WRITE;
-/*!40000 ALTER TABLE `order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `order` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `owner` (
+  `SSN` int NOT NULL,
+  `phone` int NOT NULL,
+  `fName` varchar(45) NOT NULL,
+  `lName` varchar(45) NOT NULL,
+  UNIQUE KEY `SSN_UNIQUE` (`SSN`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping routines for database 'restaurantdb'
+-- Table structure for table `revenue`
 --
+
+DROP TABLE IF EXISTS `revenue`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `revenue` (
+  `branchID` int NOT NULL,
+  `DATE` date NOT NULL,
+  `total` float NOT NULL,
+  `profit` float NOT NULL,
+  `loss` float NOT NULL,
+  KEY `branchID_r_idx` (`branchID`),
+  CONSTRAINT `branchID_r` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -308,4 +331,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-08 17:11:31
+-- Dump completed on 2020-04-08 18:57:09
