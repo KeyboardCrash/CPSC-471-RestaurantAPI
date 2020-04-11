@@ -63,7 +63,7 @@ CREATE TABLE `customers` (
   `fname` varchar(255) NOT NULL,
   `lname` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,14 +212,15 @@ DROP TABLE IF EXISTS `membership`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `membership` (
   `cardId` int NOT NULL AUTO_INCREMENT,
-  `tier` int DEFAULT '0',
-  `points` int DEFAULT '0',
+  `tier` int NOT NULL DEFAULT '0',
+  `points` int NOT NULL DEFAULT '0',
   `lastUsed` date NOT NULL,
   `customerId` int NOT NULL,
   PRIMARY KEY (`cardId`),
+  UNIQUE KEY `customerId_UNIQUE` (`customerId`),
   KEY `memerCustId_idx` (`customerId`),
   CONSTRAINT `memerCustId` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -285,7 +286,7 @@ CREATE TABLE `order` (
   UNIQUE KEY `billingNo_UNIQUE` (`billingNo`),
   KEY `billingCustomerID_idx` (`customerId`),
   CONSTRAINT `billingCustomerID` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -331,4 +332,4 @@ CREATE TABLE `revenue` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-08 18:57:09
+-- Dump completed on 2020-04-10 18:06:43

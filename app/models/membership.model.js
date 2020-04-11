@@ -70,9 +70,21 @@ Membership.findById = (memberId, result) => {
 
 
 Membership.updateById = (cardId, member, result) => {
+      tier = null;
+      points = null;
+      lastUsed = null;
+      if ("tier" in member) {
+            tier = member.tier;
+      }
+      if ("points" in member) {
+            points = member.points;
+      } 
+      if ("lastUsed" in member) {
+            lastUsed = member.lastUsed;
+      }
+
       sql.query(
-        "UPDATE membership SET tier = ?, points = ?, lastUsed = ? WHERE cardId = ?",
-        [member.tier, member.points, member.lastUsed, cardId],
+        "call restaurantdb.updateMember(?, ?, ?, ?);", [cardId, tier, points, lastUsed],     
         (err, res) => {
           if (err) {
             console.log("error: ", err);

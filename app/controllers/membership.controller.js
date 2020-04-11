@@ -83,11 +83,11 @@ exports.update = (req, res) => {
                   message: "Content can not be empty!"
             });
       }
-      membership = new Membership(req.body)
-      membership.tier = req.body.tier 
+      console.log("request: ", req.query);
+
       Membership.updateById(
             req.params.memberId,
-            membership,
+            req.body,
             (err, data) => {
                   if (err) {
                         if (err.kind === "not_found") {
