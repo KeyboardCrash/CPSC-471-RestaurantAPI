@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `restaurantdb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `restaurantdb`;
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
 -- Host: localhost    Database: restaurantdb
@@ -224,6 +226,7 @@ CREATE TABLE `information` (
 
 LOCK TABLES `information` WRITE;
 /*!40000 ALTER TABLE `information` DISABLE KEYS */;
+INSERT INTO `information` VALUES (1,'1','Asian','China'),(2,'1','Asian','United States');
 /*!40000 ALTER TABLE `information` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -478,6 +481,7 @@ CREATE TABLE `reservations` (
   `reservationSource` varchar(45) DEFAULT NULL,
   `custId` int NOT NULL,
   PRIMARY KEY (`FK_branchId`,`resId`,`custId`),
+  UNIQUE KEY `resId_UNIQUE` (`resId`),
   KEY `custId_idx` (`custId`),
   CONSTRAINT `custId` FOREIGN KEY (`custId`) REFERENCES `customers` (`id`),
   CONSTRAINT `FK_branchId` FOREIGN KEY (`FK_branchId`) REFERENCES `branch` (`branchID`)
@@ -490,7 +494,7 @@ CREATE TABLE `reservations` (
 
 LOCK TABLES `reservations` WRITE;
 /*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
-INSERT INTO `reservations` VALUES (1,1,9,'2020-03-01 18:15:00','Online',10),(2,2,4,'2020-03-01 19:00:00','In Person',11),(2,15,18,'2019-07-10 18:00:00','Online',11),(2,15,18,'2019-07-10 18:00:00','Online',12),(3,3,6,'2020-03-01 17:00:00','In App',12),(3,8,10,'2019-04-01 17:00:00','Online',11),(4,4,5,'2020-03-01 20:00:00','Phone',12),(4,12,13,'2020-04-15 18:00:00','Phone',12);
+INSERT INTO `reservations` VALUES (1,1,9,'2020-03-01 18:15:00','Online',10),(2,2,4,'2020-03-01 19:00:00','In Person',11),(2,15,18,'2019-07-10 18:00:00','Online',11),(3,3,6,'2020-03-01 17:00:00','In App',12),(3,8,10,'2019-04-01 17:00:00','Online',11),(4,4,5,'2020-03-01 20:00:00','Phone',12),(4,12,13,'2020-04-15 18:00:00','Phone',12);
 /*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -507,9 +511,11 @@ CREATE TABLE `revenue` (
   `total` float NOT NULL,
   `profit` float NOT NULL,
   `loss` float NOT NULL,
+  `fake_revenue_key` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`fake_revenue_key`),
   KEY `branchID_r_idx` (`branchID`),
   CONSTRAINT `branchID_r` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -518,6 +524,7 @@ CREATE TABLE `revenue` (
 
 LOCK TABLES `revenue` WRITE;
 /*!40000 ALTER TABLE `revenue` DISABLE KEYS */;
+INSERT INTO `revenue` VALUES (1,'2019-03-01',15000,8000,7000,1),(2,'2019-03-02',32000,30000,2000,2),(2,'2019-07-01',36000,20000,16000,3);
 /*!40000 ALTER TABLE `revenue` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -534,4 +541,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-13 15:04:16
+-- Dump completed on 2020-04-13 16:00:07

@@ -67,3 +67,48 @@ exports.createReservation = (req, res) => {
     } else res.send(data);
   });
 };
+
+//get reservation by customer
+
+exports.findResFromCust = (req, res) => {
+  Reservations.getReservationFromCustomer(req.params.custId, (err, data) => {
+    //console.log("Testing req.params");
+    console.log(req.params.custId);
+    //console.log(req.query.custId);
+
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Could not find reservations for customer with id ${req.params.custId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving reservation for customer with id " + req.params.custId
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+
+// delete reservation
+
+exports.removeReservation = (req, res) => {
+  Reservations.deleteReservation(req.params.resId , (err, data) => {
+    //console.log("Testing req.params");
+    console.log(req.params.resId);
+    //console.log(req.query.custId);
+
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Could not create reservation with id ${req.params.resId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving reservation with id " + req.params.resId
+        });
+      }
+    } else res.send(data);
+  });
+};

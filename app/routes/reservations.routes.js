@@ -11,7 +11,9 @@ module.exports = app => {
 
   app.get("/api/reservations/:resId", reservations.findOne);
 
-  app.post("/api/reservations/create/", reservations.createReservation);
+  app.get("/api/reservations/customer/:custId", reservations.findResFromCust);
+
+  app.get("/api/reservations/delete/:resId", reservations.removeReservation);
 
 
 };

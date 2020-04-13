@@ -35,8 +35,9 @@ Branch.getAll = result => {
 };
 
 Branch.findBranchInfo = (branchId, result) => {
-  sql.query("SELECT * FROM branch as b, information_contactinfo as bci, information_timesopen as bti WHERE "
-  + `b.branchId = bci.branchId and b.branchId = bti.branchId and ${branchId} = b.branchId`
+  sql.query("SELECT b.*, bci.*, bti.*, i.*, sum(r.total), sum(r.profit), sum(r.loss) FROM branch as b, information_contactinfo as bci, information_timesopen as bti, information as i, revenue as r WHERE "
+  + `b.branchId = bci.branchId and b.branchId = bti.branchId and ${branchId} = b.branchId and r.branchId = b.branchId and i.branchId = b.branchId `
+  + `GROUP BY b.branchId HAVING sum(r.total) and sum(r.profit) and sum(r.loss)`
   , (err, res) => {
     if (err) {
       console.log("error: ", err);

@@ -74,4 +74,36 @@ Reservations.makeReservation = (data, result) => {
   });
 };
 
+Reservations.getReservationFromCustomer = (custId, result) => {
+  sql.query("SELECT * "
+    + "FROM reservations as r, customers as c "
+    + `WHERE ${custId} = c.id and c.id = r.custId`,
+    (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("Reservations: ", res);
+    result(null, res);
+  });
+};
+
+Reservations.deleteReservation = (resId, result) => {
+  sql.query("DELETE "
+    + "FROM reservations as r "
+    + `WHERE r.resId = ${resId}`,
+    (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("Reservations: ", res);
+    result(null, res);
+  });
+};
+
 module.exports = Reservations;
