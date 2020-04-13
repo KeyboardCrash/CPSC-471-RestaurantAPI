@@ -9,10 +9,8 @@ exports.create = (req, res) => {
             });
       }
 
-      // Create a Customer
+      // Create a new membership
       const membership = new Membership({
-            /*             points: req.body.points,
-                        tier: req.body.tier, */
             lastUsed: req.body.lastUsed,
             customerId: req.body.customerId
       });
@@ -33,19 +31,7 @@ exports.create = (req, res) => {
       });
 };
 
-// Retrieve all Customers from the database.
-exports.findAll = (req, res) => {
-      Customer.getAll((err, data) => {
-            if (err)
-                  res.status(500).send({
-                        message:
-                              err.message || "Some error occurred while retrieving customers."
-                  });
-            else res.send(data);
-      });
-};
-
-// Find a single Customer with a customerId
+// Find a single Member with a memberId
 exports.findOne = (req, res) => {
       Membership.findById(req.params.memberId, (err, data) => {
             if (err) {
@@ -75,7 +61,7 @@ exports.findAll = (req, res) => {
       });
 };
 
-// Update a Customer identified by the customerId in the request
+// Update a Member identified by the memberId in the request
 exports.update = (req, res) => {
       // Validate Request
       if (!req.body) {
