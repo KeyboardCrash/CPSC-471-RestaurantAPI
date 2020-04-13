@@ -30,3 +30,51 @@ exports.findOne = (req, res) => {
     } else res.send(data);
   });
 };
+
+exports.getBranchInfo = (req, res) => {
+  Branch.findBranchInfo(req.params.branchId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Branch not found with id ${req.params.branchId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving branch with id " + req.params.branchId
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+exports.getBranchEmployees = (req, res) => {
+  Branch.findBranchEmps(req.params.branchId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Branch not found with id ${req.params.branchId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving branch with id " + req.params.branchId
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+exports.getBranchManager = (req, res) => {
+  Branch.findBranchManager(req.params.branchId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Branch not found with id ${req.params.branchId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving branch with id " + req.params.branchId
+        });
+      }
+    } else res.send(data);
+  });
+};

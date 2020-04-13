@@ -9,4 +9,11 @@ module.exports = app => {
 
   app.get("/api/branch/:branchId", branch.findOne);
 
+  app.get("/api/branch/:branchId/information", branch.getBranchInfo);
+
+  app.get("/api/branch/:branchId/employees", branch.getBranchEmployees);
+
+  app.get("/api/branch/:branchId/employees/manager", branch.getBranchManager);
+
+
 };

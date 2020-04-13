@@ -174,6 +174,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
+INSERT INTO `employee` VALUES (1,1,'Cashier',1,'123456',20,'Calgary','1234','Bacon','McNuggets'),(2,1,'Waiter',2,'234121',30,'Edmonton','1234','Wendys','Savage'),(3,2,'Waitress',3,'123121',50,'Vancouver','5251','Jeeves','TheSearchEngine'),(4,1,'Manager',15,'931278',100,'Toronto','93252','Geico','Lizard');
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -237,9 +238,11 @@ CREATE TABLE `information_contactinfo` (
   `branchID` int NOT NULL,
   `phoneNumber` int NOT NULL,
   `website` varchar(45) DEFAULT NULL,
+  `fake_contact_pk` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`fake_contact_pk`),
   KEY `branchID` (`branchID`),
   CONSTRAINT `branchID_c` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,6 +251,7 @@ CREATE TABLE `information_contactinfo` (
 
 LOCK TABLES `information_contactinfo` WRITE;
 /*!40000 ALTER TABLE `information_contactinfo` DISABLE KEYS */;
+INSERT INTO `information_contactinfo` VALUES (1,123456,'1.com',1),(2,234567,'2.com',2),(3,345678,'3.com',3),(4,456789,'4.com',4);
 /*!40000 ALTER TABLE `information_contactinfo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -273,6 +277,7 @@ CREATE TABLE `information_timesopen` (
 
 LOCK TABLES `information_timesopen` WRITE;
 /*!40000 ALTER TABLE `information_timesopen` DISABLE KEYS */;
+INSERT INTO `information_timesopen` VALUES (1,'1','08:00:00','16:00:00'),(2,'2','06:00:00','20:00:00'),(3,'3','11:00:00','06:00:00'),(4,'4','09:00:00','05:00:00');
 /*!40000 ALTER TABLE `information_timesopen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -485,7 +490,7 @@ CREATE TABLE `reservations` (
 
 LOCK TABLES `reservations` WRITE;
 /*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
-INSERT INTO `reservations` VALUES (1,1,9,'2020-03-01 18:15:00','Online',10),(2,2,4,'2020-03-01 19:00:00','In Person',11),(3,3,6,'2020-03-01 17:00:00','In App',12),(3,8,10,'2019-04-01 17:00:00','Online',11),(4,4,5,'2020-03-01 20:00:00','Phone',12);
+INSERT INTO `reservations` VALUES (1,1,9,'2020-03-01 18:15:00','Online',10),(2,2,4,'2020-03-01 19:00:00','In Person',11),(2,15,18,'2019-07-10 18:00:00','Online',11),(2,15,18,'2019-07-10 18:00:00','Online',12),(3,3,6,'2020-03-01 17:00:00','In App',12),(3,8,10,'2019-04-01 17:00:00','Online',11),(4,4,5,'2020-03-01 20:00:00','Phone',12),(4,12,13,'2020-04-15 18:00:00','Phone',12);
 /*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -529,4 +534,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-13 13:08:00
+-- Dump completed on 2020-04-13 15:04:16
