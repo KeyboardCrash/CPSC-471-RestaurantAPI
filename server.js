@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 require("./app/routes/customer.routes.js")(app);
 require("./app/routes/menu.routes.js")(app);
 require("./app/routes/membership.routes.js")(app);
+require("./app/routes/reservations.routes.js")(app);
 
 
 
