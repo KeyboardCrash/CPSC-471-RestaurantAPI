@@ -12,6 +12,7 @@ require("./app/routes/customer.routes.js")(app);
 require("./app/routes/menu.routes.js")(app);
 require("./app/routes/membership.routes.js")(app);
 require("./app/routes/order.routes.js")(app);
+require("./app/routes/dish.routes.js")(app);
 
 
 
