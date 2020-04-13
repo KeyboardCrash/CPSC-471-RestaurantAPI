@@ -10,6 +10,7 @@ const Reservations = function(Reservations) {
   this.guestCount = Reservations.guestCount;
   this.requestedTime = Reservations.requestedTime;
   this.reservationSource = Reservations.reservationSource;
+  this.custId = Reservations.custId;
 };
 
 Reservations.findById = (reservationId, result) => {
@@ -56,10 +57,11 @@ Reservations.getPerRestaurant = (branchId, result) => {
 
 
 Reservations.makeReservation = (data, result) => {
+  //console.log(data.custId);
 
-  sql.query("INSERT INTO reservations (FK_branchId, resId, guestCount, requestedTime, reservationSource) "
+  sql.query("INSERT INTO reservations (FK_branchId, resId, guestCount, requestedTime, reservationSource, custId) "
     // create new reservation type with the body response and parse with that?
-    + `VALUES (${data.FK_branchId}, ${data.resId}, ${data.guestCount}, '${data.requestedTime}', '${data.reservationSource}')`
+    + `VALUES (${data.FK_branchId}, ${data.resId}, ${data.guestCount}, '${data.requestedTime}', '${data.reservationSource}', ${data.custId})`
     , (err, res) => {
     if (err) {
       console.log("error: ", err);
