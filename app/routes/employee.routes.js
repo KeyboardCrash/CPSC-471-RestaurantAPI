@@ -4,7 +4,10 @@
 
 module.exports = app => {
     const employees = require("../controllers/employee.controller.js");
-      
+    
+    //Create a new employee
+    app.get("/employees", employees.create);
+
     // Retrieve all employees
     app.get("/employees", employees.findAll);
   

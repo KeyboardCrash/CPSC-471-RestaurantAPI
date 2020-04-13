@@ -4,6 +4,41 @@
 
 const Employee = require("../models/employee.model.js");
 
+
+// Create and Save a new employee
+exports.create = (req, res) => {
+    // Validate request
+    if (!req.body) {
+      res.status(400).send({
+        message: "Content can not be empty!"
+      });
+    }
+  
+    // Create a employee
+    const employee = new Employee({
+      branchID: req.body.branchID,
+      position: req.body.position,
+      yearsOfExperience: req.body.yearsOfExperience,
+      phone: req.body.phone,
+      salary: req.body.salary,
+      city: req.body.city,
+      zipCode: req.body.zipCode,
+      fName: req.body.fName,
+      lName: req.body.fName,
+    });
+  
+    // Save employee in the database
+    Employee.create(employee, (err, data) => {
+      if (err)
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the Employee."
+        });
+      else res.send(data);
+    });
+};
+
+
 exports.findAll = (req, res) => {
   Employee.getAll((err, data) => {
     if (err)
