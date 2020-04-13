@@ -36,8 +36,8 @@ Reservations.getAll = result => {
 
 Reservations.getPerRestaurant = (branchId, result) => {
   sql.query("SELECT * "
-    + "FROM reservations as a, branch as b"
-    + `WHERE FK_branchId=${branchId}`
+    + "FROM reservations as r, branch as b "
+    + `WHERE r.FK_branchId=${branchId} and b.branchId = ${branchId}`
     , (err, res) => {
     if (err) {
       console.log("error: ", err);
