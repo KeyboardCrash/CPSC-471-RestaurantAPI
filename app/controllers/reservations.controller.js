@@ -49,9 +49,9 @@ exports.findPerRestaurant = (req, res) => {
 
 exports.createReservation = (req, res) => {
   Reservations.makeReservation(req.query, (err, data) => {
-    console.log("Testing req.params");
-    console.log(req.query);
-    console.log(req.query.resId);
+    //console.log("Testing req.params");
+    //console.log(req.query);
+    //console.log(req.query.resId);
 
 
     if (err) {

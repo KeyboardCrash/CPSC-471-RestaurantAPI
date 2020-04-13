@@ -80,7 +80,7 @@ CREATE TABLE `customers` (
   `fname` varchar(255) NOT NULL,
   `lname` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,6 +89,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (10,'a@gmail.com','Alpha','Cust'),(11,'b@gmail.com','Beta','Cust'),(12,'c@gmail.com','Charlie','Cust');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -470,7 +471,10 @@ CREATE TABLE `reservations` (
   `guestCount` int DEFAULT NULL,
   `requestedTime` datetime DEFAULT NULL,
   `reservationSource` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`FK_branchId`,`resId`),
+  `custId` int NOT NULL,
+  PRIMARY KEY (`FK_branchId`,`resId`,`custId`),
+  KEY `custId_idx` (`custId`),
+  CONSTRAINT `custId` FOREIGN KEY (`custId`) REFERENCES `customers` (`id`),
   CONSTRAINT `FK_branchId` FOREIGN KEY (`FK_branchId`) REFERENCES `branch` (`branchID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -481,7 +485,7 @@ CREATE TABLE `reservations` (
 
 LOCK TABLES `reservations` WRITE;
 /*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
-INSERT INTO `reservations` VALUES (1,1,9,'2020-03-01 18:15:00','Online'),(2,2,4,'2020-03-01 19:00:00','In Person'),(3,3,6,'2020-03-01 17:00:00','In App'),(3,8,10,'2019-04-01 17:00:00','Online'),(4,4,5,'2020-03-01 20:00:00','Phone');
+INSERT INTO `reservations` VALUES (1,1,9,'2020-03-01 18:15:00','Online',10),(2,2,4,'2020-03-01 19:00:00','In Person',11),(3,3,6,'2020-03-01 17:00:00','In App',12),(3,8,10,'2019-04-01 17:00:00','Online',11),(4,4,5,'2020-03-01 20:00:00','Phone',12);
 /*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -525,4 +529,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-13 11:33:18
+-- Dump completed on 2020-04-13 13:08:00
