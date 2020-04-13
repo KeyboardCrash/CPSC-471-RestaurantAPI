@@ -11,7 +11,7 @@ module.exports = app => {
 
   app.get("/api/reservations/:resId", reservations.findOne);
 
-  app.put("/api/reservations/create/", reservations.createReservation);
+  app.post("/api/reservations/create/", reservations.createReservation);
 
 
 };
