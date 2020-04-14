@@ -16,9 +16,10 @@ exports.create = (req, res) => {
   
     // Create a Customer
     const customer = new Customer({
+      id: 0,
       email: req.body.email,
-      name: req.body.name,
-      active: req.body.active
+      fname: req.body.fname,
+      lname: req.body.lname
     });
   
     // Save Customer in the database
@@ -115,5 +116,37 @@ exports.deleteAll = (req, res) => {
           err.message || "Some error occurred while removing all customers."
       });
     else res.send({ message: `All Customers were deleted successfully!` });
+  });
+};
+
+exports.getPhone = (req, res) => {
+  Customer.findPhoneById(req.params.customerId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Customer with id ${req.params.customerId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Customer with id " + req.params.customerId
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+exports.getAddress = (req, res) => {
+  Customer.findAddrById(req.params.customerId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Customer with id ${req.params.customerId}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Customer with id " + req.params.customerId
+        });
+      }
+    } else res.send(data);
   });
 };

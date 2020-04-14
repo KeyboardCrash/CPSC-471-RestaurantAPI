@@ -6,20 +6,23 @@ module.exports = app => {
   const customers = require("../controllers/customer.controller.js");
 
   // Create a new Customer
-  app.post("/customers", customers.create);
+  app.post("/api/customers", customers.create);
 
   // Retrieve all Customers
-  app.get("/customers", customers.findAll);
+  app.get("/api/customers", customers.findAll);
 
   // Retrieve a single Customer with customerId
-  app.get("/customers/:customerId", customers.findOne);
+  app.get("/api/customers/:customerId", customers.findOne);
 
   // Update a Customer with customerId
-  app.put("/customers/:customerId", customers.update);
+  app.put("/api/customers/:customerId", customers.update);
 
   // Delete a Customer with customerId
-  app.delete("/customers/:customerId", customers.delete);
+  app.delete("/api/customers/:customerId", customers.delete);
 
-  // Create a new Customer
-  app.delete("/customers", customers.deleteAll);
+  app.get("/api/customers/:customerId/phone", customers.getPhone);
+
+  app.get("/api/customers/:customerId/address", customers.getAddress);
+
+
 };
