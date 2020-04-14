@@ -1,5 +1,5 @@
 
-// customer controller, holds all the methods for dealing with customers in the db
+// employee controller, holds all the methods for dealing with employees in the db
 // Won't really have to touch this as it's just verifying data
 
 const Employee = require("../models/employee.model.js");
@@ -16,6 +16,7 @@ exports.create = (req, res) => {
   
     // Create a employee
     const employee = new Employee({
+      SSN: req.body.SSN,
       branchID: req.body.branchID,
       position: req.body.position,
       yearsOfExperience: req.body.yearsOfExperience,
@@ -24,7 +25,7 @@ exports.create = (req, res) => {
       city: req.body.city,
       zipCode: req.body.zipCode,
       fName: req.body.fName,
-      lName: req.body.fName,
+      lName: req.body.lName,
     });
   
     // Save employee in the database
@@ -65,4 +66,51 @@ exports.findOne = (req, res) => {
     } else res.send(data);
   });
 };
+
+
+// Update a Employee identified by the employeeId in the request
+exports.update = (req, res) => {
+    // Validate Request
+    if (!req.body) {
+      res.status(400).send({
+        message: "Content can not be empty!"
+      });
+    }
+  
+    Employee.updateBySSN(
+      req.params.SSN,
+      new Employee(req.body),
+      (err, data) => {
+        if (err) {
+          if (err.kind === "not_found") {
+            res.status(404).send({
+              message: `Not found Employee with id ${req.params.SSN}.`
+            });
+          } else {
+            res.status(500).send({
+              message: "Error updating Employee with id " + req.params.SSN
+            });
+          }
+        } else res.send(data);
+      }
+    );
+};
+
+// Delete a Employee with the specified employeeId in the request
+exports.delete = (req, res) => {
+  Employee.remove(req.params.SSN, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Employee with SSN ${req.params.SSN}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Could not delete Employee with SSN " + req.params.SSN
+        });
+      }
+    } else res.send({ message: `Employee was deleted successfully!` });
+  });
+};
+
 

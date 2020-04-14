@@ -4,7 +4,7 @@ const sql = require("./db.js");
 
 // Employee constructor
 const Employee = function(employee) {
-    //this.ssn = employee.ssn; 
+    this.SSN = employee.SSN; 
     this.branchID = employee.branchID;
     this.position = employee.position;
     this.yearsOfExperience = employee.yearsOfExperience;
@@ -24,8 +24,8 @@ Employee.create = (newEmployee, result) => {
         return;
       }
   
-      console.log("created employee: ", { id: res.insertId, ...newEmployee });
-      result(null, { id: res.insertId, ...newEmployee });
+      console.log("created employee: ", newEmployee);
+      result(null, newEmployee );
     });
   };
 
@@ -37,7 +37,7 @@ Employee.getAll = result => {
         return;
       }
   
-      console.log("All employees: ", res);
+      console.log("All employee: ", res);
       result(null, res);
     });
   };
@@ -56,4 +56,48 @@ Employee.findBySSN = (SSN, result) => {
     });
   };
 
+
+  Employee.updateBySSN = (SSN, employee, result) => {
+    sql.query(
+      "UPDATE employee SET SSN = ?, branchID = ?, position = ?, yearsofExperience = ?, phone = ?, salary = ?, city = ?, zipCode = ?, fName = ?, lName = ? WHERE SSN = ?",
+      [employee.SSN, employee.branchID, employee.position, employee.yearsOfExperience, employee.phone, employee.salary, employee.city, employee.zipCode, employee.fName, employee.lName, SSN],
+      (err, res) => {
+        if (err) {
+          console.log("error: ", err);
+          result(null, err);
+          return;
+        }
+  
+        if (res.affectedRows == 0) {
+          // not found Employee with the id
+          result({ kind: "not_found" }, null);
+          return;
+        }
+  
+        console.log("updated employee: ", { SSN: SSN, ...employee });
+        result(null, { SSN: SSN, ...employee });
+      }
+    );
+  };
+  
+  Employee.remove = (SSN, result) => {
+    sql.query("DELETE FROM employee WHERE SSN = ?", SSN, (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+  
+      if (res.affectedRows == 0) {
+        // not found Employee with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+  
+      console.log("deleted employee with SSN: ", SSN);
+      result(null, res);
+    });
+  };
+
   module.exports = Employee;
+  
