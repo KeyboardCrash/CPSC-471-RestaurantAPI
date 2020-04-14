@@ -1,6 +1,6 @@
-const Membership = require("../models/membership.model.js");
+const Dish = require("../models/dish.model.js");
 
-// Create and Save a new member
+// Create and Save a new dish
 exports.create = (req, res) => {
       // Validate request
       if (!req.body) {
@@ -8,20 +8,16 @@ exports.create = (req, res) => {
                   message: "Content can not be empty!"
             });
       }
-
-      // Create a new membership
-      const membership = new Membership({
-            lastUsed: req.body.lastUsed,
-            customerId: req.body.customerId
+      const dish = new Dish ({
+            name : req.body.name,
+            quantityMade : req.body.quantityMade,
+            description : req.body.description,
+            price : req.body.price,
+            numOfOrders : req.body.numOfOrders
       });
 
-      if (req.body.tier) membership.tier = req.body.tier
-      else membership.tier = 0
-      if (req.body.points) membership.points = req.body.points
-      else membership.points = 0
-
-      // Save Member in the database
-      Membership.create(membership, (err, data) => {
+      // Save dish in the database
+      Dish.create(dish, (err, data) => {
             if (err)
                   res.status(500).send({
                         message:
@@ -31,17 +27,17 @@ exports.create = (req, res) => {
       });
 };
 
-// Find a single Member with a memberId
+// Find a single Member with a dishId
 exports.findOne = (req, res) => {
-      Membership.findById(req.params.memberId, (err, data) => {
+      Dish.findById(req.params.dishId, (err, data) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Membership with id ${req.params.memberId}.`
+                              message: `Not found Dish with name ${req.params.dishId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Membership with id " + req.params.memberId
+                              message: "Error retrieving Dish with name " + req.params.dishId
                         });
                   }
             } else res.send(data);
@@ -49,9 +45,9 @@ exports.findOne = (req, res) => {
 };
 
 
-// Retrieve all Membership from the database.
+// Retrieve all Dish from the database.
 exports.findAll = (req, res) => {
-      Membership.getAll((err, data) => {
+      Dish.getAll((err, data) => {
             if (err)
                   res.status(500).send({
                         message:
@@ -64,25 +60,22 @@ exports.findAll = (req, res) => {
 // Update a Member identified by the memberId in the request
 exports.update = (req, res) => {
       // Validate Request
-      if (!req.body) {
-            res.status(400).send({
-                  message: "Content can not be empty!"
-            });
-      }
+      let params = req.query;
+      const dish = new Dish (params);
       console.log("request: ", req.query);
 
-      Membership.updateById(
-            req.params.memberId,
-            req.body,
+      Dish.updateById(
+            req.params.dishId,
+            dish,
             (err, data) => {
                   if (err) {
                         if (err.kind === "not_found") {
                               res.status(404).send({
-                                    message: `Not found Membership with id ${req.params.memberId}.`
+                                    message: `Not found Dish with id ${req.params.memberId}.`
                               });
                         } else {
                               res.status(500).send({
-                                    message: "Error updating Membership with id " + req.params.memberId
+                                    message: "Error updating Dish with name " + req.params.dishId
                               });
                         }
                   } else res.send(data);
@@ -93,29 +86,29 @@ exports.update = (req, res) => {
 
 // Delete a Member with the specified memberId in the request
 exports.delete = (req, res) => {
-      Membership.remove(req.params.memberId, (err, data) => {
+      Dish.remove(req.params.dishId, (err, data) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Membership with id ${req.params.memberId}.`
+                              message: `Not found Dish with name ${req.params.dishId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Could not delete Membership with id " + req.params.memberId
+                              message: "Could not delete Dish with name " + req.params.dishId
                         });
                   }
-            } else res.send({ message: `Member was deleted successfully!` });
+            } else res.send({ message: `Dish was deleted successfully!` });
       });
 };
 
 // Delete all members from the database.
 exports.deleteAll = (req, res) => {
-      Membership.removeAll((err, data) => {
+      Dish.removeAll((err, data) => {
             if (err)
                   res.status(500).send({
                         message:
-                              err.message || "Some error occurred while removing all memberships."
+                              err.message || "Some error occurred while removing all dishes."
                   });
-            else res.send({ message: `All Memberships were deleted successfully!` });
+            else res.send({ message: `All dishes were deleted successfully!` });
       });
 };
