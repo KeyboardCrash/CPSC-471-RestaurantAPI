@@ -7,16 +7,16 @@ module.exports = app => {
       // Create a new Member
       app.post("/dish", dish.create);
 
-      // retrieve a dish by name
-      app.get("/dish/:dishName", dish.findOne);    
+      // retrieve a dish by Id
+      app.get("/dish/:dishId", dish.findOne);    
       // Retrieve all Members
       app.get("/dish", dish.findAll);
 
       // Update a dish with name
-     app.put("/dish/:dishName", dish.update);   
+     app.put("/dish/:dishId", dish.update);   
      
       // Delete a dish with name
-     app.delete("/dish/:dishName", dish.delete);     
+     app.delete("/dish/:dishId", dish.delete);     
 
       // Delete all dishes
      app.delete("/dish", dish.deleteAll);

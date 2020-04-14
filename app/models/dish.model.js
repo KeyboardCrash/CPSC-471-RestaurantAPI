@@ -26,7 +26,7 @@ Dish.create = (newDish, result) => {
 };
 
 Dish.findById = (DishId, result) => {
-  sql.query(`SELECT * FROM dish WHERE name = ?`, [DishId], (err, res) => {
+  sql.query(`SELECT * FROM dish WHERE id = ${DishId}`,  (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -57,7 +57,7 @@ Dish.getAll = result => {
   });
 };
 
-Dish.updateById = (dishName, dish, result) => {
+Dish.updateById = (dishId, dish, result) => {
       let changedDish = new Dish(dish);
 
 
@@ -75,7 +75,7 @@ Dish.updateById = (dishName, dish, result) => {
       // stored procedure doesn't require for all parameters to have values
       // optional changing of attributes, null value is left for paramters that the user didn't indicate to change
       sql.query(
-        "call restaurantdb.updateDish(?, ?, ?, ?,?,?);", [dishName, dish.name, dish.description, dish.quantityMade, dish.price, dish.numOfOrders],     
+        "call restaurantdb.updateDish(?, ?, ?, ?,?,?);", [dishId, dish.name, dish.description, dish.quantityMade, dish.price, dish.numOfOrders],     
         (err, res) => {
           if (err) {
             console.log("error: ", err);
@@ -96,7 +96,7 @@ Dish.updateById = (dishName, dish, result) => {
 
 
 Dish.remove = (id, result) => {
-  sql.query("DELETE FROM dish WHERE name = ?", id, (err, res) => {
+  sql.query("DELETE FROM dish WHERE id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

@@ -27,17 +27,17 @@ exports.create = (req, res) => {
       });
 };
 
-// Find a single Member with a dishName
+// Find a single Member with a dishId
 exports.findOne = (req, res) => {
-      Dish.findById(req.params.dishName, (err, data) => {
+      Dish.findById(req.params.dishId, (err, data) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Dish with name ${req.params.dishName}.`
+                              message: `Not found Dish with name ${req.params.dishId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Dish with name " + req.params.dishName
+                              message: "Error retrieving Dish with name " + req.params.dishId
                         });
                   }
             } else res.send(data);
@@ -60,21 +60,12 @@ exports.findAll = (req, res) => {
 // Update a Member identified by the memberId in the request
 exports.update = (req, res) => {
       // Validate Request
-/*       if (!req.body) {
-            res.status(400).send({
-                  message: "Content can not be empty!"
-            });
-      }
-*/
       let params = req.query;
-
       const dish = new Dish (params);
-
-
       console.log("request: ", req.query);
 
       Dish.updateById(
-            req.params.dishName,
+            req.params.dishId,
             dish,
             (err, data) => {
                   if (err) {
@@ -84,7 +75,7 @@ exports.update = (req, res) => {
                               });
                         } else {
                               res.status(500).send({
-                                    message: "Error updating Dish with name " + req.params.dishName
+                                    message: "Error updating Dish with name " + req.params.dishId
                               });
                         }
                   } else res.send(data);
@@ -95,15 +86,15 @@ exports.update = (req, res) => {
 
 // Delete a Member with the specified memberId in the request
 exports.delete = (req, res) => {
-      Dish.remove(req.params.dishName, (err, data) => {
+      Dish.remove(req.params.dishId, (err, data) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Dish with name ${req.params.dishName}.`
+                              message: `Not found Dish with name ${req.params.dishId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Could not delete Dish with name " + req.params.dishName
+                              message: "Could not delete Dish with name " + req.params.dishId
                         });
                   }
             } else res.send({ message: `Dish was deleted successfully!` });
