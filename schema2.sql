@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `restaurantdb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `restaurantdb`;
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
 -- Host: localhost    Database: restaurantdb
@@ -46,6 +44,31 @@ INSERT INTO `branch` VALUES (1,'1',300000),(2,'1',300001),(3,'1',300001),(4,'1.1
 UNLOCK TABLES;
 
 --
+-- Table structure for table `customer_address`
+--
+
+DROP TABLE IF EXISTS `customer_address`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `customer_address` (
+  `customerId` int NOT NULL,
+  `address` varchar(50) NOT NULL,
+  PRIMARY KEY (`customerId`,`address`),
+  CONSTRAINT `customerIdAdress` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customer_address`
+--
+
+LOCK TABLES `customer_address` WRITE;
+/*!40000 ALTER TABLE `customer_address` DISABLE KEYS */;
+INSERT INTO `customer_address` VALUES (10,'12 Bacon Drive'),(11,'144 Washington Hill'),(12,'2222 Britannia Place');
+/*!40000 ALTER TABLE `customer_address` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `customer_phone`
 --
 
@@ -66,6 +89,7 @@ CREATE TABLE `customer_phone` (
 
 LOCK TABLES `customer_phone` WRITE;
 /*!40000 ALTER TABLE `customer_phone` DISABLE KEYS */;
+INSERT INTO `customer_phone` VALUES (10,234847),(11,123456),(12,234456);
 /*!40000 ALTER TABLE `customer_phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,30 +117,6 @@ LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
 INSERT INTO `customers` VALUES (10,'a@gmail.com','Alpha','Cust'),(11,'b@gmail.com','Beta','Cust'),(12,'c@gmail.com','Charlie','Cust');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `cutomer_address`
---
-
-DROP TABLE IF EXISTS `cutomer_address`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cutomer_address` (
-  `customerId` int NOT NULL,
-  `address` varchar(50) NOT NULL,
-  PRIMARY KEY (`customerId`,`address`),
-  CONSTRAINT `customerIdAdress` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cutomer_address`
---
-
-LOCK TABLES `cutomer_address` WRITE;
-/*!40000 ALTER TABLE `cutomer_address` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cutomer_address` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -541,4 +541,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-13 16:00:07
+-- Dump completed on 2020-04-13 21:28:11
