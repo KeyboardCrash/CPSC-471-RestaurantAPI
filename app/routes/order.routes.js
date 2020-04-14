@@ -17,9 +17,6 @@ module.exports = app => {
       // Retrieve all orders of a customer with customerId
       app.get("/api/order/customer/:customerId", order.getOrdersByCustomer);
 
-      // see the list of dish orders in an order
-      app.get("/api/order/list/:orderNo", order.getDishOrder);
-
       // add an entry to the list of dish orders of an order
       app.post("/api/order/list/:orderNo", order.addDishOrder);     
       
