@@ -484,7 +484,164 @@ UNLOCK TABLES;
 
 
 
-/*!40101 SET character_set_client = @saved_cs_client */;
+--
+-- Dumping routines for database 'restaurantdb'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `addDishtoOrder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addDishtoOrder`(orderNo int, dishId int, qty int)
+BEGIN
+	INSERT INTO order_list SET `orderNo` = orderNo, `dishId` = dishId, `qty` = qty;
+    
+    /* update the total bill of this order*/
+    UPDATE restaurantdb.order
+	SET restaurantdb.order.billAmount = restaurantdb.order.billAmount + (qty *(SELECT dish.price
+						FROM dish
+						where dish.id = dishId))
+	where restaurantdb.order.billingNo = orderNo;
+    
+    /* update the numOfOrders of this dish */
+    UPDATE dish
+    SET dish.numOfOrders = dish.numOfOrders + (1 * qty)
+    WHERE dish.id = dishId;
+    
+    /* return the order of this dish from the order_list */
+    SELECT orderNo, dishId, name, qty 
+    FROM order_list, dish 
+    where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteDishOrder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDishOrder`(orderNo int, dishId int)
+BEGIN
+	/* update the total bill of this order*/
+    UPDATE restaurantdb.order
+	SET restaurantdb.order.billAmount = 
+    restaurantdb.order.billAmount - ((SELECT qty FROM order_list where order_list.orderNo = orderNo and order_list.dishId = dishId) *(SELECT dish.price
+						FROM dish
+						where dish.id = dishId))
+	where restaurantdb.order.billingNo = orderNo;
+    
+	/* update the numOfOrders of this dish */
+    UPDATE dish
+    SET dish.numOfOrders = dish.numOfOrders - (1 * (SELECT qty FROM order_list where order_list.orderNo = orderNo and order_list.dishId = dishId))
+    WHERE dish.id = dishId; 
+  
+	/* finally, delete this dish entry from the order_list */
+	DELETE
+	FROM order_list
+	where order_list.orderNo = orderNo and order_list.dishId = dishId;   
+    
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `getAllOrdersbyID` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllOrdersbyID`(custID Int)
+BEGIN
+SELECT * FROM restaurantdb.order
+where customerId = custID;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `updateDish` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDish`(dishId int, changeName varchar(50), descript varchar(500), quantityMade int, price int, numOfOrders int)
+BEGIN
+	if (changeName is not null) then
+		UPDATE dish SET dish.name = changeName where dish.id = dishId;
+	end if;
+	if (descript is not null) then
+		UPDATE dish SET dish.description = descript where dish.id = dishId;
+	end if;
+	if (quantityMade is not null) then
+		UPDATE dish SET dish.quantityMade = quantityMade where dish.id = dishId;
+	end if;
+	if (price is not null) then
+		UPDATE dish SET dish.price = price where dish.id = dishId;
+	end if;
+	if (numOfOrders is not null) then
+		UPDATE dish SET dish.numOfOrders = numOfOrders where dish.id = dishId;
+	end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `updateMember` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateMember`(cardId Int, tier int, points int, lastUsed date)
+BEGIN
+	if (tier is not null) then
+		UPDATE membership SET membership.tier = tier where membership.cardId = cardId;
+	end if;
+	if (points is not null) then
+		UPDATE membership SET membership.points = points where membership.cardId = cardId;
+	end if;
+	if (lastUsed is not null) then
+		UPDATE membership SET membership.lastUsed = lastUsed where membership.cardId = cardId;
+	end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -495,4 +652,5 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-08 18:57:09
+-- Dump completed on 2020-04-14 13:50:19
+
