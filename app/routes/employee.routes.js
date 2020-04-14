@@ -6,18 +6,18 @@ module.exports = app => {
     const employees = require("../controllers/employee.controller.js");
     
     //Create a new employee
-    app.post("/employees", employees.create);
+    app.post("/api/employees", employees.create);
 
     // Retrieve all employees
-    app.get("/employees", employees.findAll);
+    app.get("/api/employees", employees.findAll);
   
     // Retrieve a single employee with employee SSN
-    app.get("/employees/:SSN", employees.findOne);  
+    app.get("/api/employees/:SSN", employees.findOne);  
 
     // Update a Customer with SSN
-    app.put("/employees/:SSN", employees.update);
+    app.put("/api/employees/:SSN", employees.update);
 
     // Delete a Customer with employeeId
-    app.delete("/employees/:SSN", employees.delete);
+    app.delete("/api/employees/:SSN", employees.delete);
 
   };
