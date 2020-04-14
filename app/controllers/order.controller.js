@@ -6,7 +6,7 @@ exports.createOrder = (req, res) => {
       res.status(400).send({
         message: "Content can not be empty!"
       });
-    }
+    } else {
   
     // Create a new order for this customer
     const order = new Order({
@@ -23,6 +23,7 @@ exports.createOrder = (req, res) => {
         res.status(500).send({error: err.sqlMessage});
       else res.send(data);
     });
+   } 
 };
 
 // Retrieve all orders from the database
@@ -91,4 +92,33 @@ exports.getDishOrder = (req, res) => {
                   res.status(500).send({error: err.sqlMessage});
             else res.send(result);
       });
+}
+
+// delete a dish from the list of dish orders for an order
+exports.delDishOrder = (req, res) => {
+    // Validate request
+    if (!req.query.dishId) {
+      res.status(400).send({
+        message: "Content can not be empty! Specify a dishId in the parameters"
+      });
+    } else {
+            Order.delDishOrder(req.params.orderNo, req.query.dishId, (err, result) => {
+                  if (err) {
+                        if (err.kind === "not_found") {
+                              res.status(404).send({
+                                    message: `Not found Order with number ${req.params.orderNo}.`
+                              });
+                        } else if(err.kind === "not_found_dish") {
+                              res.status(404).send({
+                                    message: `Not found Dish with id ${req.query.dishId}.`
+                              });
+                        } else {
+                              res.status(500).send({
+                                    message: "Could not delete Membership with id " + req.params.memberId
+                              });
+                        }
+                  } else res.send({ message: `deleted dish ${req.query.dishId} from order ${req.params.orderNo}`});
+            });
+      }
+
 }
