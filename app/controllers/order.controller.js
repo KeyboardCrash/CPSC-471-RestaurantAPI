@@ -86,14 +86,6 @@ exports.addDishOrder = (req, res) => {
       
 };
 
-exports.getDishOrder = (req, res) => {
-      Order.getDishOrder(req.params.orderNo, (err, result) => {
-            if (err)
-                  res.status(500).send({error: err.sqlMessage});
-            else res.send(result);
-      });
-}
-
 // delete a dish from the list of dish orders for an order
 exports.delDishOrder = (req, res) => {
     // Validate request
