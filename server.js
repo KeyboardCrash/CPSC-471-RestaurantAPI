@@ -15,7 +15,7 @@ require("./app/routes/order.routes.js")(app);
 require("./app/routes/dish.routes.js")(app);
 require("./app/routes/reservations.routes.js")(app);
 require("./app/routes/branch.routes.js")(app);
-
+require("./app/routes/employee.routes.js")(app);
 
 
 port = process.env.PORT || 3000;
@@ -25,3 +25,4 @@ console.log('API server started on: ' + port);
 app.get("/", (req, res) => {
     res.json({message:"Restaurant API System"});
 });
+

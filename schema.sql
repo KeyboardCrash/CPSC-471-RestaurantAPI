@@ -199,8 +199,7 @@ DROP TABLE IF EXISTS `information`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `information` (
-  `branchId` int NOT NULL,
-  `menu` varchar(45) NOT NULL,
+  `branchId` int NOT NULL,  
   `typeOfCuisine` varchar(45) NOT NULL,
   `location` varchar(45) NOT NULL,
   PRIMARY KEY (`branchId`),
