@@ -16,6 +16,7 @@ require("./app/routes/dish.routes.js")(app);
 require("./app/routes/reservations.routes.js")(app);
 require("./app/routes/branch.routes.js")(app);
 require("./app/routes/employee.routes.js")(app);
+require("./app/routes/review.routes.js")(app);
 
 
 port = process.env.PORT || 3000;

@@ -9,7 +9,7 @@ module.exports = app => {
 
       // retrieve a dish by Id
       app.get("/api/dish/:dishId", dish.findOne);    
-
+  
       // Retrieve all dishes in the database
       app.get("/api/dish", dish.findAll);
 
