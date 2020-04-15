@@ -1,3 +1,4 @@
+// controller will call methods from the model to call queries
 const Membership = require("../models/membership.model.js");
 
 // Create and Save a new member
@@ -8,13 +9,13 @@ exports.create = (req, res) => {
                   message: "Content can not be empty!"
             });
       }
-
-      // Create a new membership
+      // Create a new membership with the given attributes in the
+      // body of the request
       const membership = new Membership({
             lastUsed: req.body.lastUsed,
             customerId: req.body.customerId
       });
-
+      // set their tier and points here...since it doesn't work above
       if (req.body.tier) membership.tier = req.body.tier
       else membership.tier = 0
       if (req.body.points) membership.points = req.body.points
@@ -25,9 +26,9 @@ exports.create = (req, res) => {
             if (err)
                   res.status(500).send({
                         message:
-                              err.message || "Some error occurred while creating the Customer."
+                              err.message || "Some error occurred while creating the Membership."
                   });
-            else res.send(data);
+            else res.send({memberCreated: data});
       });
 };
 
@@ -63,17 +64,14 @@ exports.findAll = (req, res) => {
 
 // Update a Member identified by the memberId in the request
 exports.update = (req, res) => {
-      // Validate Request
-      if (!req.body) {
-            res.status(400).send({
-                  message: "Content can not be empty!"
-            });
-      }
       console.log("request: ", req.query);
-
+      // validate params
+      if (!req.query.tier && !req.query.points && !req.query.lastUsed) {
+            res.status(400).send({message: "No parameters passed in the request, no changes in the database"})
+      } else {
       Membership.updateById(
             req.params.memberId,
-            req.body,
+            req.query,
             (err, data) => {
                   if (err) {
                         if (err.kind === "not_found") {
@@ -85,9 +83,10 @@ exports.update = (req, res) => {
                                     message: "Error updating Membership with id " + req.params.memberId
                               });
                         }
-                  } else res.send(data);
+                  } else res.send({memberUpdated: data});
             }
       );
+      }
 };
 
 
