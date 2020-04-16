@@ -2,9 +2,11 @@
 // When controller receives a call, it will check the model and run these sql queries
 
 const sql = require("./db.js");
+const Order = require("./order.model.js");
+const Membership = require("./membership.model.js");
 
 // constructor
-const Customer = function(customer) {
+const Customer = function (customer) {
   this.email = customer.email;
   this.fname = customer.fname;
   this.lname = customer.lname;
@@ -78,37 +80,53 @@ Customer.updateById = (id, customer, result) => {
   );
 };
 
+// deletes a customer from the database, if customer has a membership, that is also deleted
+// if the customer has orders, those are also deleted
 Customer.remove = (id, result) => {
-  sql.query("DELETE FROM customers WHERE id = ?", id, (err, res) => {
+  // delete membership first if this customer is a member
+  Membership.removeCustomerMembership(id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
+      if (err.kind == null) {
+        console.log("Something went wrong when deleting customer", err);
+        result(err, null);
+        return        
+      }
     }
-
-    if (res.affectedRows == 0) {
-      // not found Customer with the id
-      result({ kind: "not_found" }, null);
-      return;
-    }
-
-    console.log("deleted customer with id: ", id);
-    result(null, res);
+    // customer has no membership or it successfully deleted the customer's membership entry
+    if (err && err.kind != null || res != null) {
+      // now delete all customer orders
+      Order.delCustomerOrders(id, (err, res) => {
+        if (err) {
+          if (err.kind == null) {
+            console.log("Something went wrong when deleting customer orders", err);
+            result(err, null);
+            return            
+          }
+        }  
+        // not found orders to delete, or successfully deleted orders
+        if (err && err.kind != null || res != null) {
+          // now delete the customer itself
+            sql.query(`call restaurantdb.deleteCustomerInfo(${id});`, (err, res) => {
+              if (err) {
+                console.log("error: ", err);
+                result(null, err);
+                return;
+              }
+              if (res.affectedRows == 0) {
+                // not found Customer with the id
+                result({ kind: "not_found" }, null);
+                return;
+              }
+              console.log("deleted customer with id: ", id);
+              result(null, res);
+            });
+        }
+      });
+    } 
   });
+
 };
 
-Customer.removeAll = result => {
-  sql.query("DELETE FROM customers", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-
-    console.log(`deleted ${res.affectedRows} customers`);
-    result(null, res);
-  });
-};
 
 Customer.findPhoneById = (customerId, result) => {
   sql.query(`SELECT cphone.phone FROM customers as c, customer_phone as cphone WHERE c.id = ${customerId} and c.id = cphone.customerId`, (err, res) => {

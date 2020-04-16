@@ -12,13 +12,19 @@ module.exports = app => {
     
       // Retrieve a single member by memberId
       app.get("/api/membership/:memberId", members.findOne);
+
+      // Retrieve a customer's membership by customer id
+      app.get("/api/membership/customer/:custId", members.findCustomer);
     
       // Update a Membership with memberId
      app.put("/api/membership/:memberId", members.update);
     
       // Delete a member with memberId
      app.delete("/api/membership/:memberId", members.delete);
+
+     // Delete a customer's membership
+     app.delete("/api/membership/customer/:custId", members.deleteCustomerMembership);
     
       // Delete all memberships
      app.delete("/api/membership", members.deleteAll);
-    };
+};

@@ -31,4 +31,7 @@ module.exports = app => {
 
       // delete an order from the database
       app.delete("/api/order/:orderNo", order.delOrder);
+
+      // delete all orders of a customer given the customer id
+      app.delete("/api/order/customer/:customerId", order.delCustomerOrders);
 };

@@ -71,6 +71,39 @@ Membership.findById = (memberId, result) => {
       });
 };
 
+// find the membership entry with the given customer id
+Membership.findCustomer = (custId, result) => {
+      sql.query(`SELECT * FROM membership WHERE customerId = ${custId}`, (err, res) => {
+            if (err) {
+                  console.log("error in retrieving customer's membership: ", err);
+                  result(err, null);
+                  return;
+            } 
+            // result is not empty, found customer's membership entry
+            if (res.length > 0) {
+                  let thisMember = res[0]
+                  // get list of transactions from this card
+                  // query from order to get all orders from this customer
+                  // return an object
+                  Order.getAllOrdersByCustomer(custId,(err,data) => {
+                        if (err) {
+                              console.log("error in retrieving customer orders: ", err);
+                              result(err, null);
+                              return;
+                        }   
+                        // include it in the response
+                        thisMember.transactions = [...data];     
+                        console.log("retrieved customer membership: ", thisMember);
+                        result(null, thisMember);    
+
+                  });
+                  return
+            }  
+            // else, no membership found with this customer id
+            result({kind: "not_found"}, null)
+      });
+}
+
 // update the member with the given id
 Membership.updateById = (cardId, member, result) => {
 
@@ -130,6 +163,25 @@ Membership.remove = (id, result) => {
         result(null, res);
       });
     };
+
+// deletes a membership entry with the given customer id
+Membership.removeCustomerMembership = (custId, result) => {
+      sql.query(`DELETE FROM membership WHERE customerId = ${custId}`, (err, res) => {
+            if (err) {
+                  console.log("error: ", err);
+                  result(null, err);
+                  return;
+                }
+                if (res.affectedRows == 0) {
+                  // not found Membership with the id
+                  result({ kind: "not_found" }, null);
+                  return;
+                }
+                console.log("deleted member with cardId: ", custId);
+                result(null, res);           
+      });
+};
+
 
 // permanently deletes all membership records in the database
 Membership.removeAll = result => {

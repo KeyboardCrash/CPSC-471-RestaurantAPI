@@ -32,6 +32,19 @@ exports.create = (req, res) => {
       });
 };
 
+// Retrieve all Membership from the database.
+exports.findAll = (req, res) => {
+      Membership.getAll((err, data) => {
+            if (err)
+                  res.status(500).send({
+                        message:
+                              err.message || "Some error occurred while retrieving memberships."
+                  });
+            else res.send(data);
+      });
+};
+
+
 // Find a single Member with a memberId
 exports.findOne = (req, res) => {
       Membership.findById(req.params.memberId, (err, data) => {
@@ -50,17 +63,23 @@ exports.findOne = (req, res) => {
 };
 
 
-// Retrieve all Membership from the database.
-exports.findAll = (req, res) => {
-      Membership.getAll((err, data) => {
-            if (err)
-                  res.status(500).send({
-                        message:
-                              err.message || "Some error occurred while retrieving memberships."
-                  });
-            else res.send(data);
+// find the membership entry with the given customer id
+exports.findCustomer = (req, res) => {
+      Membership.findCustomer(req.params.custId, (err, data) => {
+            if (err) {
+                  if (err.kind === "not_found") {
+                        res.status(404).send({
+                              message: `Not found Membership with customer id ${req.params.custId}.`
+                        });
+                  } else {
+                        res.status(500).send({
+                              message: "Error retrieving Membership with customer id " + req.params.custId
+                        });
+                  }
+            } else res.send(data);
       });
 };
+
 
 // Update a Member identified by the memberId in the request
 exports.update = (req, res) => {
@@ -104,6 +123,23 @@ exports.delete = (req, res) => {
                         });
                   }
             } else res.send({ message: `Member was deleted successfully!` });
+      });
+};
+
+// deletes a membership entry with the given customer id
+exports.deleteCustomerMembership = (req, res) => {
+      Membership.removeCustomerMembership(req.params.custId, (err, data) => {
+            if (err) {
+                  if (err.kind === "not_found") {
+                        res.status(404).send({
+                              message: `Customer with id ${req.params.custId} has no membership.`
+                        });
+                  } else {
+                        res.status(500).send({
+                              message: "Could not delete Membership with id " + req.params.memberId
+                        });
+                  }
+            } else res.send({ message: `Member with customer id ${req.params.custId} was deleted successfully!` });            
       });
 };
 

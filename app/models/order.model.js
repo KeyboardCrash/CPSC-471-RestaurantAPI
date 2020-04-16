@@ -255,4 +255,30 @@ Order.delOrder = (orderNo, result) => {
       });
 };
 
+// deletes all orders of a customer with the given customer id
+Order.delCustomerOrders = (custId, result) => {
+      // check first if the customer has orders
+      Order.getAllOrdersByCustomer(custId, (err, res) => {
+            if (err) {
+                  console.log("error: ", err)
+                  result(err, null)
+                  return
+            }
+            // the customer has orders to delete
+            if (res.length) {
+                  sql.query(`call restaurantdb.deleteCustomerOrders(${custId});`, (err, res) => {
+                        if (err) {
+                              console.log("error: ", err)
+                              result(err, null)
+                              return
+                        }
+                        result(null, "Successfully deleted all orders of this customer");
+                  });                  
+            } else { // if the customer has no orders, then we are done since there is no orders to delete
+                  result({ kind: "not_found" }, null);
+                  return;
+            }
+      });
+};
+
 module.exports = Order;
