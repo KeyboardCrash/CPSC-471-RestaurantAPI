@@ -135,7 +135,7 @@ CREATE TABLE `dish` (
   `numOfOrders` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dishId_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,7 +144,7 @@ CREATE TABLE `dish` (
 
 LOCK TABLES `dish` WRITE;
 /*!40000 ALTER TABLE `dish` DISABLE KEYS */;
-INSERT INTO `dish` VALUES (3,'spaghetti','an Italian dish consisting largely of spaghetti, typically with a sauce.',12,2),(4,'chicken pasta','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,2),(5,'tomato soup','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,3),(6,'strawberry dessert','strawberry topped with ice cream',8,0),(7,'peach mango pie','pie stuffed with the combination of mango and peach',4,3);
+INSERT INTO `dish` VALUES (3,'spaghetti','an Italian dish consisting largely of spaghetti, typically with a sauce.',12,0),(4,'chicken pasta','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,0),(5,'tomato soup','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,0),(6,'strawberry dessert','strawberry topped with ice cream',8,0),(7,'peach mango pie','pie stuffed with the combination of mango and peach',4,0),(10,'dish name','description here',0,0),(11,'dish name','description here',0,0);
 /*!40000 ALTER TABLE `dish` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,7 +324,7 @@ CREATE TABLE `membership` (
   UNIQUE KEY `customerId_UNIQUE` (`customerId`),
   KEY `memerCustId_idx` (`customerId`),
   CONSTRAINT `memerCustId` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `membership` (
 
 LOCK TABLES `membership` WRITE;
 /*!40000 ALTER TABLE `membership` DISABLE KEYS */;
-INSERT INTO `membership` VALUES (25,1,10000,'2019-04-14',11);
+INSERT INTO `membership` VALUES (25,1,10000,'2019-04-14',11),(33,0,0,'2016-08-09',10);
 /*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -427,7 +427,7 @@ CREATE TABLE `order` (
   UNIQUE KEY `billingNo_UNIQUE` (`billingNo`),
   KEY `billingCustomerID_idx` (`customerId`),
   CONSTRAINT `billingCustomerID` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -436,7 +436,6 @@ CREATE TABLE `order` (
 
 LOCK TABLES `order` WRITE;
 /*!40000 ALTER TABLE `order` DISABLE KEYS */;
-INSERT INTO `order` VALUES (27,11,72,'2018-12-02 19:06:23.000000','IN_RESTAURANT'),(28,11,0,'2018-12-02 19:06:23.000000','ONLINE'),(29,10,39,'2019-04-25 09:28:00.000000','IN_RESTAURANT');
 /*!40000 ALTER TABLE `order` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -464,7 +463,6 @@ CREATE TABLE `order_list` (
 
 LOCK TABLES `order_list` WRITE;
 /*!40000 ALTER TABLE `order_list` DISABLE KEYS */;
-INSERT INTO `order_list` VALUES (27,3,1),(27,4,2),(27,5,2),(29,3,1),(29,5,1),(29,7,3);
 /*!40000 ALTER TABLE `order_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -555,6 +553,43 @@ BEGIN
     where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
 
 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerOrders` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerOrders`(custId int)
+BEGIN
+	/* update numOfOrders for each dish entries in the order list of
+		all orders of this customer*/
+	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
+	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
+	WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order 
+								WHERE customerId = custId);
+
+	/* delete all dish entries from order_list of all the customer orders first */
+	DELETE 
+    FROM order_list
+    WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order
+								WHERE customerId = custId);
+    
+    /* then delete all orders of this customer */
+    DELETE
+    FROM restaurantdb.order
+    WHERE customerId = custId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -759,7 +794,7 @@ BEGIN
     
     SELECT *
     FROM restaurantdb.order
-    WHERE billingNo = orderNo;
+    WHERE billingNo = orderNo; 
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -776,4 +811,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-15 10:02:58
+-- Dump completed on 2020-04-16 14:57:53

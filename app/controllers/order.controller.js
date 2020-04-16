@@ -183,5 +183,21 @@ exports.delOrder = (req, res) => {
                   res.send({ message: `successfully deleted order ${req.params.orderNo}` });
             }
       });
+};
 
+// deletes all orders of a customer with the given customer id
+exports.delCustomerOrders = (req, res) => {
+      Order.delCustomerOrders(req.params.customerId, (err, data) => {
+            if (err) {
+                  if (err.kind == "not_found") {
+                        res.status(404).send({message: "The customer has no orders or the customer does not exist. No orders to delete"})
+                  } else {
+                        res.status(500).send({
+                              message: "An error occured when deleting the customers orders" + req.params.orderNo
+                        });                        
+                  }
+            } else {
+                  res.send({message: data});
+            }
+      });
 };
