@@ -66,7 +66,7 @@ CREATE TABLE `customer_phone` (
 
 LOCK TABLES `customer_phone` WRITE;
 /*!40000 ALTER TABLE `customer_phone` DISABLE KEYS */;
-INSERT INTO `customer_phone` VALUES (10,234847),(11,123456),(12,234456);
+INSERT INTO `customer_phone` VALUES (11,123456),(12,234456);
 /*!40000 ALTER TABLE `customer_phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,6 +117,7 @@ CREATE TABLE `cutomer_address` (
 
 LOCK TABLES `cutomer_address` WRITE;
 /*!40000 ALTER TABLE `cutomer_address` DISABLE KEYS */;
+INSERT INTO `cutomer_address` VALUES (10,'gcj');
 /*!40000 ALTER TABLE `cutomer_address` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,7 +325,7 @@ CREATE TABLE `membership` (
   UNIQUE KEY `customerId_UNIQUE` (`customerId`),
   KEY `memerCustId_idx` (`customerId`),
   CONSTRAINT `memerCustId` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +334,6 @@ CREATE TABLE `membership` (
 
 LOCK TABLES `membership` WRITE;
 /*!40000 ALTER TABLE `membership` DISABLE KEYS */;
-INSERT INTO `membership` VALUES (25,1,10000,'2019-04-14',11),(33,0,0,'2016-08-09',10);
 /*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -427,7 +427,7 @@ CREATE TABLE `order` (
   UNIQUE KEY `billingNo_UNIQUE` (`billingNo`),
   KEY `billingCustomerID_idx` (`customerId`),
   CONSTRAINT `billingCustomerID` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -553,6 +553,38 @@ BEGIN
     where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
 
 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerInfo` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerInfo`(custId int)
+BEGIN
+  /* delete customer phone */
+	DELETE
+    FROM customer_phone
+    WHERE customerId = custId;
+    
+    /* delete customer address */
+    DELETE
+    FROM customer_address
+    WHERE customerId = custId;
+    
+    /* delete customer */
+    DELETE 
+    FROM customers
+    WHERE id = custId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -811,4 +843,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-16 14:57:53
+-- Dump completed on 2020-04-16 16:01:05
