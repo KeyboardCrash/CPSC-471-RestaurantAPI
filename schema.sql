@@ -134,13 +134,22 @@ CREATE TABLE `dish` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `description` varchar(500) NOT NULL,
-  `quantityMade` int NOT NULL DEFAULT '0',
   `price` double NOT NULL,
   `numOfOrders` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dishId_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dish`
+--
+
+LOCK TABLES `dish` WRITE;
+/*!40000 ALTER TABLE `dish` DISABLE KEYS */;
+INSERT INTO `dish` VALUES (3,'spaghetti','an Italian dish consisting largely of spaghetti, typically with a sauce.',12,2),(4,'chicken pasta','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,2),(5,'tomato soup','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,3),(6,'strawberry dessert','strawberry topped with ice cream',8,0),(7,'peach mango pie','pie stuffed with the combination of mango and peach',4,3);
+/*!40000 ALTER TABLE `dish` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `employee`
@@ -213,7 +222,7 @@ CREATE TABLE `information` (
 
 LOCK TABLES `information` WRITE;
 /*!40000 ALTER TABLE `information` DISABLE KEYS */;
-INSERT INTO `information` VALUES (1,'1','Asian','China'),(2,'1','Asian','United States');
+INSERT INTO `information` VALUES (1,'Asian','China'),(2,'Asian','United States');
 /*!40000 ALTER TABLE `information` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -330,31 +339,11 @@ CREATE TABLE `menu` (
 --
 
 DROP TABLE IF EXISTS `mobile`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `mobile` (
-  `orderBillingNo` int NOT NULL,
-  `appName` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`orderBillingNo`),
-  CONSTRAINT `mobileBillNo` FOREIGN KEY (`orderBillingNo`) REFERENCES `order` (`billingNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
 --
 -- Table structure for table `online`
 --
 
 DROP TABLE IF EXISTS `online`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `online` (
-  `orderBillingNo` int NOT NULL,
-  `Website` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`orderBillingNo`),
-  CONSTRAINT `onlineBillNo` FOREIGN KEY (`orderBillingNo`) REFERENCES `order` (`billingNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
 --
 -- Table structure for table `order`
 --
@@ -364,16 +353,26 @@ DROP TABLE IF EXISTS `order`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order` (
   `billingNo` int NOT NULL AUTO_INCREMENT,
-  `billAmount` double NOT NULL,
-  `tipAmount` double NOT NULL,
-  `date` timestamp(6) NULL DEFAULT NULL,
   `customerId` int NOT NULL,
+  `billAmount` double NOT NULL,
+  `date` timestamp(6) NOT NULL,
+  `orderType` varchar(13) NOT NULL,
   PRIMARY KEY (`billingNo`,`customerId`),
   UNIQUE KEY `billingNo_UNIQUE` (`billingNo`),
   KEY `billingCustomerID_idx` (`customerId`),
   CONSTRAINT `billingCustomerID` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order`
+--
+
+LOCK TABLES `order` WRITE;
+/*!40000 ALTER TABLE `order` DISABLE KEYS */;
+INSERT INTO `order` VALUES (27,11,72,'2018-12-02 19:06:23.000000','IN_RESTAURANT'),(28,11,0,'2018-12-02 19:06:23.000000','ONLINE'),(29,10,39,'2019-04-25 09:28:00.000000','IN_RESTAURANT');
+/*!40000 ALTER TABLE `order` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `order_list`
@@ -392,6 +391,16 @@ CREATE TABLE `order_list` (
   CONSTRAINT `orderlistNo` FOREIGN KEY (`orderNo`) REFERENCES `order` (`billingNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_list`
+--
+
+LOCK TABLES `order_list` WRITE;
+/*!40000 ALTER TABLE `order_list` DISABLE KEYS */;
+INSERT INTO `order_list` VALUES (27,3,1),(27,4,2),(27,5,2),(29,3,1),(29,5,1),(29,7,3);
+/*!40000 ALTER TABLE `order_list` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `owner`
@@ -482,7 +491,6 @@ INSERT INTO `revenue` VALUES (1,'2019-03-01',15000,8000,7000,1),(2,'2019-03-02',
 UNLOCK TABLES;
 
 
-
 --
 -- Dumping routines for database 'restaurantdb'
 --
@@ -498,6 +506,14 @@ UNLOCK TABLES;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `addDishtoOrder`(orderNo int, dishId int, qty int)
 BEGIN
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	INSERT INTO order_list SET `orderNo` = orderNo, `dishId` = dishId, `qty` = qty;
     
     /* update the total bill of this order*/
@@ -516,8 +532,125 @@ BEGIN
     SELECT orderNo, dishId, name, qty 
     FROM order_list, dish 
     where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+    
+    COMMIT;
 
 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomer` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomer`(custId int)
+BEGIN
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+	ROLLBACK;
+	END;
+	START TRANSACTION;
+	/* delete their membership (if they have one) */
+	DELETE FROM membership WHERE customerId = custId;
+    
+	/* Now delete all the customer orders */
+
+	/* update numOfOrders for each dish entries in the order list of
+		all orders of this customer*/
+	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
+	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
+	WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order 
+								WHERE customerId = custId);
+
+	/* delete all dish entries from order_list of all the customer orders first */
+	DELETE 
+    FROM order_list
+    WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order
+								WHERE customerId = custId);
+    
+    /* then delete all orders of this customer */
+    DELETE
+    FROM restaurantdb.order
+    WHERE customerId = custId;
+   
+   /* Now delete the customer */
+   
+     /* delete customer phone */
+	DELETE
+    FROM customer_phone
+    WHERE customerId = custId;
+    
+    /* delete customer address */
+    DELETE
+    FROM customer_address
+    WHERE customerId = custId;
+    
+    /* delete customer */
+    DELETE 
+    FROM customers
+    WHERE id = custId;
+    
+    COMMIT;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerOrders` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerOrders`(custId int)
+BEGIN
+	/* Orders: delete orders by customer with id */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+	/* update numOfOrders for each dish entries in the order list of
+		all orders of this customer*/
+	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
+	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
+	WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order 
+								WHERE customerId = custId);
+
+	/* delete all dish entries from order_list of all the customer orders first */
+	DELETE 
+    FROM order_list
+    WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order
+								WHERE customerId = custId);
+    
+    /* then delete all orders of this customer */
+    DELETE
+    FROM restaurantdb.order
+    WHERE customerId = custId;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -535,7 +668,16 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDishOrder`(orderNo int, dishId int)
-BEGIN
+BEGIN	/* Used in ORDER: delete dish from list */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+
 	/* update the total bill of this order*/
     UPDATE restaurantdb.order
 	SET restaurantdb.order.billAmount = 
@@ -554,13 +696,15 @@ BEGIN
 	FROM order_list
 	where order_list.orderNo = orderNo and order_list.dishId = dishId;   
     
+    COMMIT;
+    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `getAllOrdersbyID` */;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteOrder` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -570,11 +714,31 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getAllOrdersbyID`(custID Int)
-BEGIN
-SELECT * FROM restaurantdb.order
-where customerId = custID;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteOrder`(orderNo int)
+BEGIN	/* Orders: delete order */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+	/* update numOfOrders for each dish entries in this order's order_list */
+	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
+	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
+	WHERE order_list.orderNo = orderNo;
 
+	/* delete all dish entries from order_list first */
+	DELETE 
+    FROM order_list
+    WHERE order_list.orderNo = orderNo;
+    
+    /* then delete order */
+    DELETE
+    FROM restaurantdb.order
+    WHERE restaurantdb.order.billingNo = orderNo;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -591,16 +755,21 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDish`(dishId int, changeName varchar(50), descript varchar(500), quantityMade int, price int, numOfOrders int)
-BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDish`(dishId int, changeName varchar(50), descript varchar(500), price int, numOfOrders int)
+BEGIN /* Dish: update dish with id */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	if (changeName is not null) then
 		UPDATE dish SET dish.name = changeName where dish.id = dishId;
 	end if;
 	if (descript is not null) then
 		UPDATE dish SET dish.description = descript where dish.id = dishId;
-	end if;
-	if (quantityMade is not null) then
-		UPDATE dish SET dish.quantityMade = quantityMade where dish.id = dishId;
 	end if;
 	if (price is not null) then
 		UPDATE dish SET dish.price = price where dish.id = dishId;
@@ -608,6 +777,74 @@ BEGIN
 	if (numOfOrders is not null) then
 		UPDATE dish SET dish.numOfOrders = numOfOrders where dish.id = dishId;
 	end if;
+    /* return the dish */
+    SELECT *
+    FROM dish
+    WHERE id = dishId;
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `updateDishOrderQty` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDishOrderQty`(orderNo int, dishId int, newqty int)
+BEGIN
+
+
+declare oldqty int;
+declare difference int;
+DECLARE exit handler for sqlexception
+BEGIN
+		-- ERROR
+        SHOW ERRORS;
+ROLLBACK;
+END;
+
+START TRANSACTION;
+
+SELECT qty
+INTO oldqty
+FROM order_list
+where order_list.orderNo = orderNo and order_list.dishId = dishId;
+
+/* update order_list with the new quantity */
+SET difference = newqty - oldqty;
+UPDATE order_list
+SET qty = newqty
+WHERE order_list.orderNo = orderNo and order_list.dishId = dishId;
+  
+/* update the total bill of this order*/
+UPDATE restaurantdb.order
+SET restaurantdb.order.billAmount = restaurantdb.order.billAmount + (difference *(SELECT dish.price
+						FROM dish
+						where dish.id = dishId))
+where restaurantdb.order.billingNo = orderNo;
+
+/* update the dish's numOfOrders */
+	UPDATE dish
+    SET dish.numOfOrders = dish.numOfOrders + difference
+    WHERE dish.id = dishId;   
+    
+
+
+/* return the order of this dish from the order_list */
+SELECT orderNo, dishId, name, qty 
+FROM order_list, dish 
+where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+
+COMMIT;
+    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -641,6 +878,37 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `updateOrder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateOrder`(orderNo int, billAmnt int, newDate timestamp(6), orderType varchar(13))
+BEGIN
+	if (billAmnt is not null) then
+		UPDATE restaurantdb.order SET billAmount = billAmnt where billingNo = orderNo;
+    end if;
+	if (newDate is not null) then
+		UPDATE restaurantdb.order SET restaurantdb.order.date = newDate where billingNo = orderNo;
+    end if;
+	if (orderType is not null) then
+    	UPDATE restaurantdb.order SET restaurantdb.order.orderType = orderType where billingNo = orderNo;
+    end if;
+    
+    SELECT *
+    FROM restaurantdb.order
+    WHERE billingNo = orderNo; 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -651,5 +919,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-14 13:50:19
-
+-- Dump completed on 2020-04-17 11:56:38
