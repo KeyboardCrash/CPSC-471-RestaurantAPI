@@ -222,7 +222,7 @@ CREATE TABLE `information` (
 
 LOCK TABLES `information` WRITE;
 /*!40000 ALTER TABLE `information` DISABLE KEYS */;
-INSERT INTO `information` VALUES (1,'1','Asian','China'),(2,'1','Asian','United States');
+INSERT INTO `information` VALUES (1,'Asian','China'),(2,'Asian','United States');
 /*!40000 ALTER TABLE `information` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -506,6 +506,14 @@ UNLOCK TABLES;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `addDishtoOrder`(orderNo int, dishId int, qty int)
 BEGIN
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	INSERT INTO order_list SET `orderNo` = orderNo, `dishId` = dishId, `qty` = qty;
     
     /* update the total bill of this order*/
@@ -524,6 +532,8 @@ BEGIN
     SELECT orderNo, dishId, name, qty 
     FROM order_list, dish 
     where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+    
+    COMMIT;
 
 
 END ;;
@@ -532,7 +542,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerInfo` */;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomer` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -542,40 +552,19 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerInfo`(custId int)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomer`(custId int)
 BEGIN
-  /* delete customer phone */
-	DELETE
-    FROM customer_phone
-    WHERE customerId = custId;
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+	ROLLBACK;
+	END;
+	START TRANSACTION;
+	/* delete their membership (if they have one) */
+	DELETE FROM membership WHERE customerId = custId;
     
-    /* delete customer address */
-    DELETE
-    FROM customer_address
-    WHERE customerId = custId;
-    
-    /* delete customer */
-    DELETE 
-    FROM customers
-    WHERE id = custId;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerOrders` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerOrders`(custId int)
-BEGIN
+	/* Now delete all the customer orders */
+
 	/* update numOfOrders for each dish entries in the order list of
 		all orders of this customer*/
 	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
@@ -595,6 +584,73 @@ BEGIN
     DELETE
     FROM restaurantdb.order
     WHERE customerId = custId;
+   
+   /* Now delete the customer */
+   
+     /* delete customer phone */
+	DELETE
+    FROM customer_phone
+    WHERE customerId = custId;
+    
+    /* delete customer address */
+    DELETE
+    FROM customer_address
+    WHERE customerId = custId;
+    
+    /* delete customer */
+    DELETE 
+    FROM customers
+    WHERE id = custId;
+    
+    COMMIT;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerOrders` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerOrders`(custId int)
+BEGIN
+	/* Orders: delete orders by customer with id */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+	/* update numOfOrders for each dish entries in the order list of
+		all orders of this customer*/
+	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
+	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
+	WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order 
+								WHERE customerId = custId);
+
+	/* delete all dish entries from order_list of all the customer orders first */
+	DELETE 
+    FROM order_list
+    WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order
+								WHERE customerId = custId);
+    
+    /* then delete all orders of this customer */
+    DELETE
+    FROM restaurantdb.order
+    WHERE customerId = custId;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -613,6 +669,15 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDishOrder`(orderNo int, dishId int)
 BEGIN	/* Used in ORDER: delete dish from list */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+
 	/* update the total bill of this order*/
     UPDATE restaurantdb.order
 	SET restaurantdb.order.billAmount = 
@@ -631,6 +696,8 @@ BEGIN	/* Used in ORDER: delete dish from list */
 	FROM order_list
 	where order_list.orderNo = orderNo and order_list.dishId = dishId;   
     
+    COMMIT;
+    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -648,7 +715,15 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteOrder`(orderNo int)
-BEGIN
+BEGIN	/* Orders: delete order */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	/* update numOfOrders for each dish entries in this order's order_list */
 	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
 	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
@@ -663,6 +738,7 @@ BEGIN
     DELETE
     FROM restaurantdb.order
     WHERE restaurantdb.order.billingNo = orderNo;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -680,7 +756,15 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDish`(dishId int, changeName varchar(50), descript varchar(500), price int, numOfOrders int)
-BEGIN
+BEGIN /* Dish: update dish with id */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	if (changeName is not null) then
 		UPDATE dish SET dish.name = changeName where dish.id = dishId;
 	end if;
@@ -693,6 +777,11 @@ BEGIN
 	if (numOfOrders is not null) then
 		UPDATE dish SET dish.numOfOrders = numOfOrders where dish.id = dishId;
 	end if;
+    /* return the dish */
+    SELECT *
+    FROM dish
+    WHERE id = dishId;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -711,8 +800,18 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDishOrderQty`(orderNo int, dishId int, newqty int)
 BEGIN
+
+
 declare oldqty int;
 declare difference int;
+DECLARE exit handler for sqlexception
+BEGIN
+		-- ERROR
+        SHOW ERRORS;
+ROLLBACK;
+END;
+
+START TRANSACTION;
 
 SELECT qty
 INTO oldqty
@@ -736,11 +835,15 @@ where restaurantdb.order.billingNo = orderNo;
 	UPDATE dish
     SET dish.numOfOrders = dish.numOfOrders + difference
     WHERE dish.id = dishId;   
+    
+
 
 /* return the order of this dish from the order_list */
 SELECT orderNo, dishId, name, qty 
 FROM order_list, dish 
 where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+
+COMMIT;
     
 END ;;
 DELIMITER ;
@@ -799,7 +902,7 @@ BEGIN
     
     SELECT *
     FROM restaurantdb.order
-    WHERE billingNo = orderNo;
+    WHERE billingNo = orderNo; 
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -816,4 +919,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-15 10:02:58
+-- Dump completed on 2020-04-17 11:56:38
