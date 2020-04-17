@@ -36,14 +36,19 @@ CREATE TABLE `branch` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `branch`
+-- Table structure for table `customer_address`
 --
 
-LOCK TABLES `branch` WRITE;
-/*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (1,'1',300000),(2,'1',300001),(3,'1',300001),(4,'1.1',300002);
-/*!40000 ALTER TABLE `branch` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `customer_address`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `customer_address` (
+  `customerId` int NOT NULL,
+  `address` varchar(50) NOT NULL,
+  PRIMARY KEY (`customerId`,`address`),
+  CONSTRAINT `customerIdAdress` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `customer_phone`
@@ -59,16 +64,6 @@ CREATE TABLE `customer_phone` (
   CONSTRAINT `phoneCustomerId` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `customer_phone`
---
-
-LOCK TABLES `customer_phone` WRITE;
-/*!40000 ALTER TABLE `customer_phone` DISABLE KEYS */;
-INSERT INTO `customer_phone` VALUES (11,123456),(12,234456);
-/*!40000 ALTER TABLE `customer_phone` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `customers`
@@ -87,41 +82,6 @@ CREATE TABLE `customers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `customers`
---
-
-LOCK TABLES `customers` WRITE;
-/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (10,'a@gmail.com','Alpha','Cust'),(11,'b@gmail.com','Beta','Cust'),(12,'c@gmail.com','Charlie','Cust');
-/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `cutomer_address`
---
-
-DROP TABLE IF EXISTS `cutomer_address`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cutomer_address` (
-  `customerId` int NOT NULL,
-  `address` varchar(50) NOT NULL,
-  PRIMARY KEY (`customerId`,`address`),
-  CONSTRAINT `customerIdAdress` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cutomer_address`
---
-
-LOCK TABLES `cutomer_address` WRITE;
-/*!40000 ALTER TABLE `cutomer_address` DISABLE KEYS */;
-INSERT INTO `cutomer_address` VALUES (10,'gcj');
-/*!40000 ALTER TABLE `cutomer_address` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `dish`
 --
 
@@ -136,18 +96,8 @@ CREATE TABLE `dish` (
   `numOfOrders` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dishId_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `dish`
---
-
-LOCK TABLES `dish` WRITE;
-/*!40000 ALTER TABLE `dish` DISABLE KEYS */;
-INSERT INTO `dish` VALUES (3,'spaghetti','an Italian dish consisting largely of spaghetti, typically with a sauce.',12,0),(4,'chicken pasta','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,0),(5,'tomato soup','onion, garlic, sesame oil, sayenne, chicken breast, soy sauce',15,0),(6,'strawberry dessert','strawberry topped with ice cream',8,0),(7,'peach mango pie','pie stuffed with the combination of mango and peach',4,0),(10,'dish name','description here',0,0),(11,'dish name','description here',0,0);
-/*!40000 ALTER TABLE `dish` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `employee`
@@ -175,15 +125,6 @@ CREATE TABLE `employee` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `employee`
---
-
-LOCK TABLES `employee` WRITE;
-/*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employee` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `in_restaurant`
 --
 
@@ -198,15 +139,6 @@ CREATE TABLE `in_restaurant` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `in_restaurant`
---
-
-LOCK TABLES `in_restaurant` WRITE;
-/*!40000 ALTER TABLE `in_restaurant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `in_restaurant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `information`
 --
 
@@ -215,22 +147,12 @@ DROP TABLE IF EXISTS `information`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `information` (
   `branchId` int NOT NULL,
-  `menu` varchar(45) NOT NULL,
   `typeOfCuisine` varchar(45) NOT NULL,
   `location` varchar(45) NOT NULL,
   PRIMARY KEY (`branchId`),
   UNIQUE KEY `branchId_UNIQUE` (`branchId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `information`
---
-
-LOCK TABLES `information` WRITE;
-/*!40000 ALTER TABLE `information` DISABLE KEYS */;
-/*!40000 ALTER TABLE `information` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `information_contactinfo`
@@ -243,19 +165,12 @@ CREATE TABLE `information_contactinfo` (
   `branchID` int NOT NULL,
   `phoneNumber` int NOT NULL,
   `website` varchar(45) DEFAULT NULL,
+  `fake_contact_pk` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`fake_contact_pk`),
   KEY `branchID` (`branchID`),
   CONSTRAINT `branchID_c` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `information_contactinfo`
---
-
-LOCK TABLES `information_contactinfo` WRITE;
-/*!40000 ALTER TABLE `information_contactinfo` DISABLE KEYS */;
-/*!40000 ALTER TABLE `information_contactinfo` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `information_timesopen`
@@ -272,15 +187,6 @@ CREATE TABLE `information_timesopen` (
   PRIMARY KEY (`branchID`,`weekDay`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `information_timesopen`
---
-
-LOCK TABLES `information_timesopen` WRITE;
-/*!40000 ALTER TABLE `information_timesopen` DISABLE KEYS */;
-/*!40000 ALTER TABLE `information_timesopen` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `listed_in`
@@ -300,15 +206,6 @@ CREATE TABLE `listed_in` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `listed_in`
---
-
-LOCK TABLES `listed_in` WRITE;
-/*!40000 ALTER TABLE `listed_in` DISABLE KEYS */;
-/*!40000 ALTER TABLE `listed_in` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `membership`
 --
 
@@ -325,17 +222,8 @@ CREATE TABLE `membership` (
   UNIQUE KEY `customerId_UNIQUE` (`customerId`),
   KEY `memerCustId_idx` (`customerId`),
   CONSTRAINT `memerCustId` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `membership`
---
-
-LOCK TABLES `membership` WRITE;
-/*!40000 ALTER TABLE `membership` DISABLE KEYS */;
-/*!40000 ALTER TABLE `membership` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `menu`
@@ -354,63 +242,6 @@ CREATE TABLE `menu` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `menu`
---
-
-LOCK TABLES `menu` WRITE;
-/*!40000 ALTER TABLE `menu` DISABLE KEYS */;
-/*!40000 ALTER TABLE `menu` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `mobile`
---
-
-DROP TABLE IF EXISTS `mobile`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `mobile` (
-  `orderBillingNo` int NOT NULL,
-  `appName` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`orderBillingNo`),
-  CONSTRAINT `mobileBillNo` FOREIGN KEY (`orderBillingNo`) REFERENCES `order` (`billingNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `mobile`
---
-
-LOCK TABLES `mobile` WRITE;
-/*!40000 ALTER TABLE `mobile` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mobile` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `online`
---
-
-DROP TABLE IF EXISTS `online`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `online` (
-  `orderBillingNo` int NOT NULL,
-  `Website` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`orderBillingNo`),
-  CONSTRAINT `onlineBillNo` FOREIGN KEY (`orderBillingNo`) REFERENCES `order` (`billingNo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `online`
---
-
-LOCK TABLES `online` WRITE;
-/*!40000 ALTER TABLE `online` DISABLE KEYS */;
-/*!40000 ALTER TABLE `online` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `order`
 --
 
@@ -427,17 +258,8 @@ CREATE TABLE `order` (
   UNIQUE KEY `billingNo_UNIQUE` (`billingNo`),
   KEY `billingCustomerID_idx` (`customerId`),
   CONSTRAINT `billingCustomerID` FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `order`
---
-
-LOCK TABLES `order` WRITE;
-/*!40000 ALTER TABLE `order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `order` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `order_list`
@@ -458,15 +280,6 @@ CREATE TABLE `order_list` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `order_list`
---
-
-LOCK TABLES `order_list` WRITE;
-/*!40000 ALTER TABLE `order_list` DISABLE KEYS */;
-/*!40000 ALTER TABLE `order_list` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `owner`
 --
 
@@ -483,13 +296,26 @@ CREATE TABLE `owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `owner`
+-- Table structure for table `reservations`
 --
 
-LOCK TABLES `owner` WRITE;
-/*!40000 ALTER TABLE `owner` DISABLE KEYS */;
-/*!40000 ALTER TABLE `owner` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `reservations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reservations` (
+  `FK_branchId` int NOT NULL,
+  `resId` int NOT NULL,
+  `guestCount` int DEFAULT NULL,
+  `requestedTime` datetime DEFAULT NULL,
+  `reservationSource` varchar(45) DEFAULT NULL,
+  `custId` int NOT NULL,
+  PRIMARY KEY (`FK_branchId`,`resId`,`custId`),
+  UNIQUE KEY `resId_UNIQUE` (`resId`),
+  KEY `custId_idx` (`custId`),
+  CONSTRAINT `custId` FOREIGN KEY (`custId`) REFERENCES `customers` (`id`),
+  CONSTRAINT `FK_branchId` FOREIGN KEY (`FK_branchId`) REFERENCES `branch` (`branchID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `revenue`
@@ -504,19 +330,12 @@ CREATE TABLE `revenue` (
   `total` float NOT NULL,
   `profit` float NOT NULL,
   `loss` float NOT NULL,
+  `fake_revenue_key` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`fake_revenue_key`),
   KEY `branchID_r_idx` (`branchID`),
   CONSTRAINT `branchID_r` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `revenue`
---
-
-LOCK TABLES `revenue` WRITE;
-/*!40000 ALTER TABLE `revenue` DISABLE KEYS */;
-/*!40000 ALTER TABLE `revenue` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping routines for database 'restaurantdb'
@@ -533,6 +352,14 @@ UNLOCK TABLES;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `addDishtoOrder`(orderNo int, dishId int, qty int)
 BEGIN
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	INSERT INTO order_list SET `orderNo` = orderNo, `dishId` = dishId, `qty` = qty;
     
     /* update the total bill of this order*/
@@ -551,6 +378,8 @@ BEGIN
     SELECT orderNo, dishId, name, qty 
     FROM order_list, dish 
     where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+    
+    COMMIT;
 
 
 END ;;
@@ -559,7 +388,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerInfo` */;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomer` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -569,40 +398,19 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerInfo`(custId int)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomer`(custId int)
 BEGIN
-  /* delete customer phone */
-	DELETE
-    FROM customer_phone
-    WHERE customerId = custId;
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+	ROLLBACK;
+	END;
+	START TRANSACTION;
+	/* delete their membership (if they have one) */
+	DELETE FROM membership WHERE customerId = custId;
     
-    /* delete customer address */
-    DELETE
-    FROM customer_address
-    WHERE customerId = custId;
-    
-    /* delete customer */
-    DELETE 
-    FROM customers
-    WHERE id = custId;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerOrders` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerOrders`(custId int)
-BEGIN
+	/* Now delete all the customer orders */
+
 	/* update numOfOrders for each dish entries in the order list of
 		all orders of this customer*/
 	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
@@ -622,6 +430,73 @@ BEGIN
     DELETE
     FROM restaurantdb.order
     WHERE customerId = custId;
+   
+   /* Now delete the customer */
+   
+     /* delete customer phone */
+	DELETE
+    FROM customer_phone
+    WHERE customerId = custId;
+    
+    /* delete customer address */
+    DELETE
+    FROM customer_address
+    WHERE customerId = custId;
+    
+    /* delete customer */
+    DELETE 
+    FROM customers
+    WHERE id = custId;
+    
+    COMMIT;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `deleteCustomerOrders` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCustomerOrders`(custId int)
+BEGIN
+	/* Orders: delete orders by customer with id */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+	/* update numOfOrders for each dish entries in the order list of
+		all orders of this customer*/
+	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
+	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
+	WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order 
+								WHERE customerId = custId);
+
+	/* delete all dish entries from order_list of all the customer orders first */
+	DELETE 
+    FROM order_list
+    WHERE order_list.orderNo in (SELECT billingNo
+								FROM restaurantdb.order
+								WHERE customerId = custId);
+    
+    /* then delete all orders of this customer */
+    DELETE
+    FROM restaurantdb.order
+    WHERE customerId = custId;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -640,6 +515,15 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDishOrder`(orderNo int, dishId int)
 BEGIN	/* Used in ORDER: delete dish from list */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
+
 	/* update the total bill of this order*/
     UPDATE restaurantdb.order
 	SET restaurantdb.order.billAmount = 
@@ -658,6 +542,8 @@ BEGIN	/* Used in ORDER: delete dish from list */
 	FROM order_list
 	where order_list.orderNo = orderNo and order_list.dishId = dishId;   
     
+    COMMIT;
+    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -675,7 +561,15 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteOrder`(orderNo int)
-BEGIN
+BEGIN	/* Orders: delete order */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	/* update numOfOrders for each dish entries in this order's order_list */
 	UPDATE dish INNER JOIN order_list ON dish.id = order_list.dishId
 	SET dish.numOfOrders = dish.numOfOrders - order_list.qty
@@ -690,6 +584,7 @@ BEGIN
     DELETE
     FROM restaurantdb.order
     WHERE restaurantdb.order.billingNo = orderNo;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -707,7 +602,15 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDish`(dishId int, changeName varchar(50), descript varchar(500), price int, numOfOrders int)
-BEGIN
+BEGIN /* Dish: update dish with id */
+	DECLARE exit handler for sqlexception
+	BEGIN
+		-- ERROR
+        SHOW ERRORS;
+	ROLLBACK;
+	END;
+    
+    START TRANSACTION;
 	if (changeName is not null) then
 		UPDATE dish SET dish.name = changeName where dish.id = dishId;
 	end if;
@@ -720,6 +623,11 @@ BEGIN
 	if (numOfOrders is not null) then
 		UPDATE dish SET dish.numOfOrders = numOfOrders where dish.id = dishId;
 	end if;
+    /* return the dish */
+    SELECT *
+    FROM dish
+    WHERE id = dishId;
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -738,8 +646,18 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateDishOrderQty`(orderNo int, dishId int, newqty int)
 BEGIN
+
+
 declare oldqty int;
 declare difference int;
+DECLARE exit handler for sqlexception
+BEGIN
+		-- ERROR
+        SHOW ERRORS;
+ROLLBACK;
+END;
+
+START TRANSACTION;
 
 SELECT qty
 INTO oldqty
@@ -763,11 +681,15 @@ where restaurantdb.order.billingNo = orderNo;
 	UPDATE dish
     SET dish.numOfOrders = dish.numOfOrders + difference
     WHERE dish.id = dishId;   
+    
+
 
 /* return the order of this dish from the order_list */
 SELECT orderNo, dishId, name, qty 
 FROM order_list, dish 
 where order_list.orderNo = orderNo and order_list.dishId = dish.id and dish.id = dishId;
+
+COMMIT;
     
 END ;;
 DELIMITER ;
@@ -843,4 +765,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-16 16:01:05
+-- Dump completed on 2020-04-17 11:56:38
