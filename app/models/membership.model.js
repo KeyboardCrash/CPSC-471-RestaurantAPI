@@ -16,12 +16,19 @@ Membership.create = (newMember, result) => {
       sql.query("INSERT INTO membership SET ?", newMember, (err, res) => {
             if (err) {
                   console.log("error: ", err);
-                  result(err, null);
+                  if (err.errno == 1452) { // issues with foreign keys (given customerId) was not found
+                        result({kind: "not_found"}, null);
+                  } else if (err.errno == 1062) {     // duplicate
+                        result({kind: "duplicate"}, null)
+                  } else {
+                       result(err, null); 
+                  }
                   return;
             }
-            cardId = res.insertId
-            console.log("created membership: ", { id: cardId, ...newMember });
-            result(null, { id: cardId, ...newMember });
+            console.log("result: ", res)
+            newMember.cardId = res.insertId
+            console.log("created membership: ", newMember );
+            result(null, newMember );
       });
 };
 
@@ -127,7 +134,14 @@ Membership.updateById = (cardId, member, result) => {
         (err, res) => {
           if (err) {
             console.log("error: ", err);
-            result(null, err);
+            if (err.errno == 1292) {      // sql error when parsing date
+                  result({kind: "bad_date"}, null)
+            } else if (err.errno == 1366) {     // empty string was parsed to the procedure (checked attribute in postman with empty value)
+                  result({kind: "checked_empty"}, null)
+            } else {
+                  result(null, err);
+            }
+            
             return;
           }
           // no rows were affected, meaning the member wasn't found

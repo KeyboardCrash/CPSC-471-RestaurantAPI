@@ -12,12 +12,24 @@ const Order = function (order) {
 
 // creates an order for a customer
 Order.create = (newOrder, result) => {
+      // only these are acceptable for orderType
+      if (newOrder.orderType != null && newOrder.orderType != "IN_RESTAURANT" && newOrder.orderType != "MOBILE" && newOrder.orderType != "ONLINE") {
+            result({kind: "bad_orderType"}, null)
+            return
+      }
+
       sql.query("INSERT INTO `restaurantdb`.`order` (`customerId`, `billAmount`, `date`, `orderType`) VALUES (?, '0', ?, ?);",
             [newOrder.customerId, newOrder.date, newOrder.orderType], (err, res) => {
                   if (err) {
-                        console.log("error: ", err);
-                        result(err, null);
-                        return;
+                        console.log("error: ", err.errno);
+                        if (err.errno == 1452) { // issues with foreign keys (given customerId) was not found
+                              result({kind: "not_found"}, null);
+                        } else if (err.errno == 1292){      // bad date format
+                              result({kind: "bad_date"}, null);
+                        } else {
+                              result(err, null);                            
+                        }
+                        return;  
                   }
                   console.log("created order: ", { billingNo: res.insertId, ...newOrder });
                   result(null, { billingNo: res.insertId, ...newOrder });
@@ -32,6 +44,17 @@ Order.addDishOrder = (orderNo, dish, result) => {
                   result(err, null);
                   return;
             }
+
+            // returns error code when inserting duplicate key
+            if (res[0][0].Code != undefined) {
+                  if (res[0][0].Code == 1062) { // duplicate keys (dish already exists in the order's order list)
+                     result({kind: "duplicate"},null)
+                     return   
+                  } else {    // foreign key constraint
+                        result({kind: "not_found"})
+                        return
+                  }                 
+            }
             console.log("added to the order", res[0]);
             // returns the order_list tuple of this entry including the name of the dish
             result(null, res[0]);
@@ -43,7 +66,7 @@ Order.getAll = result => {
       sql.query("SELECT * FROM restaurantdb.order", (err, res) => {
             if (err) {
                   console.log("error: ", err);
-                  result(null, err);
+                  result(err, null);
                   return;
             }
             console.log("orders: ", res);
@@ -169,13 +192,23 @@ Order.updateOrder = (orderNo, newOrder, result) => {
             changeOrder.orderType = null
       }
 
+      // only these are acceptable for orderType
+      if (changeOrder.orderType != null && changeOrder.orderType != "IN_RESTAURANT" && changeOrder.orderType != "MOBILE" && changeOrder.orderType != "ONLINE") {
+            result({kind: "bad_orderType"}, null)
+            return
+      }
+
       // stored procedure doesn't require for all parameters to have values
       // optional changing of attributes, null value is left for paramters that the user didn't indicate to change
       sql.query("call restaurantdb.updateOrder(?,?,?,?)", [orderNo, changeOrder.billAmount, changeOrder.date, changeOrder.orderType]
       , (err, res) => {
             if (err) {
                   console.log("error: ", err);
-                  result(null, err);
+                  if (err.errno == 1292) {      // sql error when parsing date
+                        result({kind: "bad_date"}, null)
+                  } else {
+                       result(err, null); 
+                  }
                   return;
                 }
                 // if response returns an order
@@ -198,9 +231,24 @@ Order.editDishOrderQty = (orderNo, dish, result) => {
                   result(err, null);
                   return;
             }
-            console.log("changed qty of this dish", res[0]);
-            // returns the order_list tuple of this entry including the name of the dish
-            result(null, res[0]);
+           // console.log("result: ", res[0].length);
+            if (res[0].length > 0) {
+                  if (res[0][0].Code != undefined) {
+                        //console.log("result", res);
+                        // 1048 Usually shows up here (error for null columns) 
+                        // one of the columns involving customer id and dish id is null
+                        // meaning they were not found
+                        result({kind: "not_found"}, null)
+                        return
+                  }
+                  console.log("changed qty of this dish", res[0]);
+                  // returns the order_list tuple of this entry including the name of the dish
+                  result(null, res[0]);                  
+            } else {
+                  result({kind: "not_found"}, null)
+                  return
+            }
+
       });
 }
 
@@ -212,23 +260,17 @@ Order.delDishOrder = (orderNo, dishId, result) => {
       sql.query(`call restaurantdb.deleteDishOrder(${orderNo},${dishId})`, (err, res) => {
             if (err) {
                   console.log("error: ", err);
-                  if (err.code = 'ER_BAD_NULL_ERROR') {
-                        // there was an error on finding the dish resulting
-                        // on bad null error when updating the billing amount
-                        console.log("error code: ", err.code)
-                        result({ kind: "not_found" }, null)
-                        return
-                  }
-                  result(null, err);
+                  result(err, null);
                   return;
             }
             console.log("result: ", res)
-            // if no rows were affected, there was no deletion, order not found
-            if (res.affectedRows == 0) {
-                  // not found Order with number
-                  result({ kind: "not_found" }, null);
-                  return;
+            // stored procedure may return an error code
+            // when order number or dishId was not found
+            if (res[0] != undefined && res[0][0].Code != undefined) {
+                     result({kind: "not_found"},null)
+                     return              
             }
+            // returns the order_list tuple of this entry including the name of the dish
             console.log(`deleted dish ${dishId} from order ${orderNo}`);
             result(null, res);
       });

@@ -14,8 +14,12 @@ exports.createOrder = (req, res) => {
             // Save Order to the database
             Order.create(req.body, (err, data) => {
                   if (err) {
-                        if (err.code = 'ER_NO_REFERENCED_ROW_2') {
-                              res.status(400).send({ error: err.sqlMessage })
+                        if (err.kind == "not_found") {
+                              res.status(404).send({ error: `customer with id ${req.body.customerId} does not exist`})
+                        } else if (err.kind == "bad_date") {
+                              res.status(400).send({error: "Invalid date format received"})
+                        } else if (err.kind == "bad_orderType") {
+                              res.status(400).send({error: "Acceptable values of orderType are only: IN_RESTAURANT, ONLINE, MOBILE"})                             
                         } else {
                               res.status(500).send({ error: err.sqlMessage });
                         }
@@ -36,11 +40,13 @@ exports.addDishOrder = (req, res) => {
       } else {
             Order.addDishOrder(req.params.orderNo, req.query, (err, data) => {
                   if (err) {
-                        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_BAD_NULL_ERROR') {
+                        if (err.kind == "not_found") {
                               res.status(404).send({
-                                    message: `Not found Order or dish.`
+                                    error: `Not found Order or dish.`
                               });
-                        } else {
+                        } else if (err.kind == "duplicate") {
+                              res.status(409).send({error: "The dish is already in the list. Use Put method to update dish from this order's order list"})
+                        } else {    
                               res.status(500).send({ error: err.sqlMessage });
                         }
                   } else res.send({ "dishAddedToOrder": data });
@@ -64,11 +70,11 @@ exports.findOne = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Order with number ${req.params.orderNo}.`
+                              error: `Not found Order with number ${req.params.orderNo}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Order with number " + req.params.orderNo
+                              error: "Error retrieving Order with number " + req.params.orderNo
                         });
                   }
             } else res.send(data);
@@ -81,11 +87,11 @@ exports.getOrdersByCustomer = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Order with id ${req.params.customerId}.`
+                              error: `Not found Order with id ${req.params.customerId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Order with id " + req.params.customerId
+                              error: "Error retrieving Order with id " + req.params.customerId
                         });
                   }
             } else res.send(data);
@@ -102,11 +108,15 @@ exports.updateOrder = (req, res) => {
                   if (err) {
                         if (err.kind === "not_found") {
                               res.status(404).send({
-                                    message: `Order not found`
+                                    error: `Order not found`
                               });
+                        } else if (err.kind == "bad_date") {
+                              res.status(400).send({error: "Invalid date format received"})
+                        } else if (err.kind == "bad_orderType") {
+                              res.status(400).send({error: "Acceptable values of orderType are only: IN_RESTAURANT, ONLINE, MOBILE"})
                         } else {
                               res.status(500).send({
-                                    message: "Error updating Order"
+                                    error: "Error updating Order"
                               });
                         }
                   } else res.send({"orderUpdated": data});
@@ -129,14 +139,14 @@ exports.editDishOrder = (req, res) => {
       } else {
             Order.editDishOrderQty(req.params.orderNo, req.query, (err, data) => {
                   if (err) {
-                        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_BAD_NULL_ERROR') {
+                        if (err.kind == "not_found") {
                               res.status(404).send({
-                                    message: `Not found Order or dish.`
+                                    error: `Not found Order or dish.`
                               });
                         } else {
                               res.status(500).send({ error: err.sqlMessage });
                         }
-                  } else res.send({ "dish qty changed": data });
+                  } else res.send({ "dishQtyChanged": data });
             });
       }
 };
@@ -151,13 +161,13 @@ exports.delDishOrder = (req, res) => {
       } else {
             Order.delDishOrder(req.params.orderNo, req.query.dishId, (err, result) => {
                   if (err) {
-                        if (err.kind === "not_found") {
+                        if (err.kind == "not_found") {
                               res.status(404).send({
-                                    message: `Not found Order or Dish.`
+                                    error: `Not found Order or Dish.`
                               });
                         } else {
                               res.status(500).send({
-                                    message: "Could not delete dish from order " + req.params.orderNo
+                                    error: "Could not delete dish from order " + req.params.orderNo
                               });
                         }
                   } else res.send({ message: `deleted dish ${req.query.dishId} from order ${req.params.orderNo}` });
@@ -171,11 +181,11 @@ exports.delOrder = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Order with number ${req.params.orderNo}`
+                              error: `Not found Order with number ${req.params.orderNo}`
                         });
                   } else {
                         res.status(500).send({
-                              message: "An error occured when deleting this order" + req.params.orderNo
+                              error: "An error occured when deleting this order" + req.params.orderNo
                         });
                   }
             } else {
@@ -190,10 +200,10 @@ exports.delCustomerOrders = (req, res) => {
       Order.delCustomerOrders(req.params.customerId, (err, data) => {
             if (err) {
                   if (err.kind == "not_found") {
-                        res.status(404).send({message: "The customer has no orders or the customer does not exist. No orders to delete"})
+                        res.status(404).send({error: "The customer has no orders or the customer does not exist. No orders to delete"})
                   } else {
                         res.status(500).send({
-                              message: "An error occured when deleting the customers orders" + req.params.orderNo
+                              error: "An error occured when deleting the customers orders" + req.params.orderNo
                         });                        
                   }
             } else {

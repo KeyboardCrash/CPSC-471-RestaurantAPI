@@ -33,11 +33,11 @@ exports.findOne = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Dish with name ${req.params.dishId}.`
+                              message: `Not found Dish with id ${req.params.dishId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Dish with name " + req.params.dishId
+                              message: "Error retrieving Dish with id " + req.params.dishId
                         });
                   }
             } else res.send(data);
@@ -69,23 +69,19 @@ exports.update = (req, res) => {
             console.log("request: ", req.query);
 
             // call the method from model
-            Dish.updateById(
-                  req.params.dishId,
-                  dish,
-                  (err, data) => {
-                        if (err) {
-                              if (err.kind === "not_found") {
-                                    res.status(404).send({
-                                          message: `Not found Dish with id ${req.params.dishId}.`
-                                    });
-                              } else {
-                                    res.status(500).send({
-                                          message: "Error updating Dish with name " + req.params.dishId
-                                    });
-                              }
-                        } else res.send({dishUpdated: data});
-                  }
-            );
+            Dish.updateById(req.params.dishId, dish, (err, data) => {
+                  if (err) {
+                        if (err.kind === "not_found") {
+                              res.status(404).send({
+                                    message: `Not found Dish with id ${req.params.dishId}.`
+                              });
+                        } else {
+                              res.status(500).send({
+                                    message: "Error updating Dish with id " + req.params.dishId
+                              });
+                        }
+                  } else res.send({dishUpdated: data});
+            });
       }
 };
 
@@ -96,14 +92,16 @@ exports.delete = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Dish with name ${req.params.dishId}.`
+                              message: `Not found Dish with id ${req.params.dishId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Could not delete Dish with name " + req.params.dishId
+                              message: "Could not delete Dish with id " + req.params.dishId
                         });
                   }
-            } else res.send({ message: `Dish was deleted successfully!` });
+            } else {
+                  res.send({ message: `Dish was deleted successfully!` })
+            };
       });
 };
 

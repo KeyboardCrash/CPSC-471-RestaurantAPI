@@ -23,12 +23,17 @@ exports.create = (req, res) => {
 
       // Save Member in the database
       Membership.create(membership, (err, data) => {
-            if (err)
-                  res.status(500).send({
-                        message:
-                              err.message || "Some error occurred while creating the Membership."
-                  });
-            else res.send({memberCreated: data});
+            if (err) {
+                  if (err.kind == "not_found") {
+                        res.status(404).send({
+                              error: `Not found Customer with id ${membership.customerId}.`
+                        });
+                  } else if (err.kind == "duplicate") {
+                        res.status(409).send({error: "This customer already has a membership"})
+                  } else {    
+                        res.status(500).send({ error: err.sqlMessage });
+                  }
+             } else res.send({memberCreated: data});
       });
 };
 
@@ -37,7 +42,7 @@ exports.findAll = (req, res) => {
       Membership.getAll((err, data) => {
             if (err)
                   res.status(500).send({
-                        message:
+                        error:
                               err.message || "Some error occurred while retrieving memberships."
                   });
             else res.send(data);
@@ -51,11 +56,11 @@ exports.findOne = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Membership with id ${req.params.memberId}.`
+                              error: `Not found Membership with id ${req.params.memberId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Membership with id " + req.params.memberId
+                              error: "Error retrieving Membership with id " + req.params.memberId
                         });
                   }
             } else res.send(data);
@@ -69,11 +74,11 @@ exports.findCustomer = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Membership with customer id ${req.params.custId}.`
+                              error: `Not found Membership with customer id ${req.params.custId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Error retrieving Membership with customer id " + req.params.custId
+                              error: "Error retrieving Membership with customer id " + req.params.custId
                         });
                   }
             } else res.send(data);
@@ -86,7 +91,7 @@ exports.update = (req, res) => {
       console.log("request: ", req.query);
       // validate params
       if (!req.query.tier && !req.query.points && !req.query.lastUsed) {
-            res.status(400).send({message: "No parameters passed in the request, no changes in the database"})
+            res.status(400).send({error: "No parameters passed in the request, no changes in the database"})
       } else {
       Membership.updateById(
             req.params.memberId,
@@ -95,11 +100,15 @@ exports.update = (req, res) => {
                   if (err) {
                         if (err.kind === "not_found") {
                               res.status(404).send({
-                                    message: `Not found Membership with id ${req.params.memberId}.`
+                                    error: `Not found Membership with id ${req.params.memberId}.`
                               });
+                        } else if (err.kind == "bad_date") {
+                              res.status(400).send({error: "Invalid date format received"})
+                        } else if (err.kind == "checked_empty") {
+                              res.status(400).send({error: "Please uncheck any parameters with empty values"})
                         } else {
                               res.status(500).send({
-                                    message: "Error updating Membership with id " + req.params.memberId
+                                    error: "Error updating Membership with id " + req.params.memberId
                               });
                         }
                   } else res.send({memberUpdated: data});
@@ -115,11 +124,11 @@ exports.delete = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Not found Membership with id ${req.params.memberId}.`
+                              error: `Not found Membership with id ${req.params.memberId}.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Could not delete Membership with id " + req.params.memberId
+                              error: "Could not delete Membership with id " + req.params.memberId
                         });
                   }
             } else res.send({ message: `Member was deleted successfully!` });
@@ -132,11 +141,11 @@ exports.deleteCustomerMembership = (req, res) => {
             if (err) {
                   if (err.kind === "not_found") {
                         res.status(404).send({
-                              message: `Customer with id ${req.params.custId} has no membership.`
+                              error: `Customer with id ${req.params.custId} has no membership.`
                         });
                   } else {
                         res.status(500).send({
-                              message: "Could not delete Membership with id " + req.params.memberId
+                              error: "Could not delete Membership with id " + req.params.memberId
                         });
                   }
             } else res.send({ message: `Member with customer id ${req.params.custId} was deleted successfully!` });            
@@ -148,8 +157,7 @@ exports.deleteAll = (req, res) => {
       Membership.removeAll((err, data) => {
             if (err)
                   res.status(500).send({
-                        message:
-                              err.message || "Some error occurred while removing all memberships."
+                        error: err.message || "Some error occurred while removing all memberships."
                   });
             else res.send({ message: `All Memberships were deleted successfully!` });
       });

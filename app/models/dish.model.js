@@ -20,8 +20,8 @@ Dish.create = (newDish, result) => {
       return;
     }
 
-    console.log("created Dish: ", newDish);
-    result(null, newDish);
+    console.log("created Dish: ", {id: res.insertId, ...newDish});
+    result(null, {id: res.insertId, ...newDish});
   });
 };
 
@@ -50,7 +50,7 @@ Dish.getAll = result => {
   sql.query("SELECT * FROM dish", (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -81,17 +81,18 @@ Dish.updateById = (dishId, dish, result) => {
         (err, res) => {
           if (err) {
             console.log("error: ", err);
-            result(null, err);
+            result(err, null);
             return;
           }
-    
-          if (res.affectedRows == 0) {
+          console.log("result: ", res)
+          // stored procedure returned an empty when selecting dish
+          if (res[0] != undefined && res[0].length == 0) {
             // not found Membership with the id
             result({ kind: "not_found" }, null);
             return;
           }
           console.log("updated member: ", changedDish);
-          result(null, changedDish);
+          result(null, res[0]);
         }
       );
     };
@@ -102,7 +103,7 @@ Dish.remove = (id, result) => {
   sql.query("DELETE FROM dish WHERE id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -122,7 +123,7 @@ Dish.removeAll = result => {
   sql.query("DELETE FROM dish", (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
