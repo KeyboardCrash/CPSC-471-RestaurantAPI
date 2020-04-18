@@ -107,17 +107,6 @@ exports.delete = (req, res) => {
   });
 };
 
-// Delete all Customers from the database.
-exports.deleteAll = (req, res) => {
-  Customer.removeAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all customers."
-      });
-    else res.send({ message: `All Customers were deleted successfully!` });
-  });
-};
 
 exports.getPhone = (req, res) => {
   Customer.findPhoneById(req.params.customerId, (err, data) => {
