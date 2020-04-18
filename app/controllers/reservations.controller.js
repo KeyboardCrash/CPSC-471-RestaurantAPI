@@ -1,9 +1,12 @@
 
-// customer controller, holds all the methods for dealing with customers in the db
 // Won't really have to touch this as it's just verifying data
 
+// specify the model used
 const Reservations = require("../models/reservations.model.js");
 
+// create controller methods that will call methods stored in the model
+
+// Controller method for finding all reservations
 exports.findAll = (req, res) => {
   Reservations.getAll((err, data) => {
     if (err)
@@ -15,6 +18,7 @@ exports.findAll = (req, res) => {
   });
 };
 
+// Controller method for finding a reservation by its reservation id
 exports.findOne = (req, res) => {
   Reservations.findById(req.params.resId, (err, data) => {
     if (err) {
@@ -31,6 +35,7 @@ exports.findOne = (req, res) => {
   });
 };
 
+// Controller method to find the reservations made under a specific restaurant id
 exports.findPerRestaurant = (req, res) => {
   Reservations.getPerRestaurant(req.params.branchId, (err, data) => {
     if (err) {
@@ -47,6 +52,8 @@ exports.findPerRestaurant = (req, res) => {
   });
 };
 
+
+// Controller method for creating a new reservation from data passed by the body
 exports.createReservation = (req, res) => {
   Reservations.makeReservation(req.query, (err, data) => {
     //console.log("Testing req.params");
@@ -69,7 +76,6 @@ exports.createReservation = (req, res) => {
 };
 
 //get reservation by customer
-
 exports.findResFromCust = (req, res) => {
   Reservations.getReservationFromCustomer(req.params.custId, (err, data) => {
     //console.log("Testing req.params");
@@ -92,7 +98,6 @@ exports.findResFromCust = (req, res) => {
 
 
 // delete reservation
-
 exports.removeReservation = (req, res) => {
   Reservations.deleteReservation(req.params.resId , (err, data) => {
     //console.log("Testing req.params");

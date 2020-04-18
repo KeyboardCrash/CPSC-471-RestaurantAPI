@@ -13,6 +13,7 @@ const Reservations = function(Reservations) {
   this.custId = Reservations.custId;
 };
 
+// Find reservations by their id
 Reservations.findById = (reservationId, result) => {
   sql.query(`SELECT * FROM reservations WHERE resId=${reservationId}`, (err, res) => {
     if (err)
@@ -26,6 +27,7 @@ Reservations.findById = (reservationId, result) => {
   });
 };
 
+// Retrieve all the reservations currently in the db
 Reservations.getAll = result => {
   sql.query("SELECT * FROM reservations", (err, res) => {
     if (err) {
@@ -39,6 +41,7 @@ Reservations.getAll = result => {
   });
 };
 
+// Grabs the reservations made for a certain restaurant id
 Reservations.getPerRestaurant = (branchId, result) => {
   sql.query("SELECT * "
     + "FROM reservations as r, branch as b "
@@ -55,7 +58,7 @@ Reservations.getPerRestaurant = (branchId, result) => {
   });
 };
 
-
+// Create a reservation and insert into db
 Reservations.makeReservation = (data, result) => {
   //console.log(data.custId);
 
@@ -74,6 +77,7 @@ Reservations.makeReservation = (data, result) => {
   });
 };
 
+// Get the reservations made for a specific customer id
 Reservations.getReservationFromCustomer = (custId, result) => {
   sql.query("SELECT * "
     + "FROM reservations as r, customers as c "
@@ -90,6 +94,7 @@ Reservations.getReservationFromCustomer = (custId, result) => {
   });
 };
 
+// Delete the reservation correlating to the given reservation id
 Reservations.deleteReservation = (resId, result) => {
   sql.query("DELETE "
     + "FROM reservations as r "
