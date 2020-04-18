@@ -71,6 +71,7 @@ exports.update = (req, res) => {
       });
     }
   
+    // update will call a construcor for a new customer for the id
     Customer.updateById(
       req.params.customerId,
       new Customer(req.body),
@@ -107,7 +108,7 @@ exports.delete = (req, res) => {
   });
 };
 
-
+// Get the phone number of a customer
 exports.getPhone = (req, res) => {
   Customer.findPhoneById(req.params.customerId, (err, data) => {
     if (err) {
@@ -124,6 +125,7 @@ exports.getPhone = (req, res) => {
   });
 };
 
+// Get the address of a customer
 exports.getAddress = (req, res) => {
   Customer.findAddrById(req.params.customerId, (err, data) => {
     if (err) {

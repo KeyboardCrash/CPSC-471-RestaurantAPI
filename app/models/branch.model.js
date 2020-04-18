@@ -8,6 +8,7 @@ const Branch = function(branch) {
 
 };
 
+// Grab branches matching branchId
 Branch.findById = (branchId, result) => {
   sql.query(`SELECT * FROM branch WHERE branchId=${branchId}`, (err, res) => {
     if (err)
@@ -21,6 +22,7 @@ Branch.findById = (branchId, result) => {
   });
 };
 
+// Return all the branches in the database
 Branch.getAll = result => {
   sql.query("SELECT * FROM branch", (err, res) => {
     if (err) {
@@ -34,8 +36,10 @@ Branch.getAll = result => {
   });
 };
 
+// Find all the information about a specific branch by joining the appropriate tables
 Branch.findBranchInfo = (branchId, result) => {
-  sql.query("SELECT b.*, bci.*, bti.*, i.* FROM branch as b, information_contactinfo as bci, information_timesopen as bti, information as i WHERE "
+  sql.query("SELECT * "
+  + "FROM branch as b, information_contactinfo as bci, information_timesopen as bti, information as i WHERE "
   + `b.branchId = bci.branchId and b.branchId = bti.branchId and ${branchId} = b.branchId and i.branchId = b.branchId`
   , (err, res) => {
     if (err) {
@@ -49,6 +53,7 @@ Branch.findBranchInfo = (branchId, result) => {
   });
 };
 
+// Find the revenue made per day under a branch
 Branch.findBranchRevenue = (branchId, result) => {
   sql.query("SELECT * FROM branch as b, revenue as r WHERE "
   + `${branchId} = b.branchId and r.branchId = b.branchId`
@@ -64,6 +69,7 @@ Branch.findBranchRevenue = (branchId, result) => {
   });
 };
 
+// Find summation of a branches total, profits and losses
 Branch.findBranchRevenueTotal = (branchId, result) => {
   sql.query("SELECT sum(r.total), sum(r.profit), sum(r.loss) FROM branch as b, revenue as r WHERE "
   + `${branchId} = b.branchId and r.branchId = b.branchId `
@@ -80,6 +86,7 @@ Branch.findBranchRevenueTotal = (branchId, result) => {
   });
 };
 
+// Find the employees working under a branch
 Branch.findBranchEmps = (branchId, result) => {
   sql.query("SELECT e.* FROM branch as b, employee as e WHERE "
   + `b.branchId = e.branchId and b.branchId=${branchId}`
@@ -95,6 +102,7 @@ Branch.findBranchEmps = (branchId, result) => {
   });
 };
 
+// Find the manager that oversees a branch
 Branch.findBranchManager = (branchId, result) => {
   sql.query("SELECT e.* FROM branch as b, employee as e WHERE "
   + `b.branchId = ${branchId} and b.branchId = e.branchId and e.position="Manager"`
