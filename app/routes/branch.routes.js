@@ -11,6 +11,10 @@ module.exports = app => {
 
   app.get("/api/branch/:branchId/information", branch.getBranchInfo);
 
+  app.get("/api/branch/:branchId/information/revenue", branch.getBranchRevenue);
+
+  app.get("/api/branch/:branchId/information/revenue/summary", branch.getBranchRevenueTotal);
+
   app.get("/api/branch/:branchId/employees", branch.getBranchEmployees);
 
   app.get("/api/branch/:branchId/employees/manager", branch.getBranchManager);

@@ -5,20 +5,20 @@ module.exports = app => {
       const members = require("../controllers/membership.controller.js");
     
       // Create a new Member
-      app.post("/membership", members.create);
+      app.post("/api/membership", members.create);
     
       // Retrieve all Members
-      app.get("/membership", members.findAll);
+      app.get("/api/membership", members.findAll);
     
       // Retrieve a single member by memberId
-      app.get("/membership/:memberId", members.findOne);
+      app.get("/api/membership/:memberId", members.findOne);
     
       // Update a Membership with memberId
-     app.put("/membership/:memberId", members.update);
+     app.put("/api/membership/:memberId", members.update);
     
       // Delete a member with memberId
-     app.delete("/membership/:memberId", members.delete);
+     app.delete("/api/membership/:memberId", members.delete);
     
       // Delete all memberships
-     app.delete("/membership", members.deleteAll);
+     app.delete("/api/membership", members.deleteAll);
     };

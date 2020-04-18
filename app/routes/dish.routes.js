@@ -5,19 +5,19 @@ module.exports = app => {
       const dish = require("../controllers/dish.controller.js");
     
       // Create a new Member
-      app.post("/dish", dish.create);
+      app.post("/api/dish", dish.create);
 
       // retrieve a dish by Id
-      app.get("/dish/:dishId", dish.findOne);    
+      app.get("/api/dish/:dishId", dish.findOne);    
       // Retrieve all Members
-      app.get("/dish", dish.findAll);
+      app.get("/api/dish", dish.findAll);
 
       // Update a dish with name
-     app.put("/dish/:dishId", dish.update);   
+     app.put("/api/dish/:dishId", dish.update);   
      
       // Delete a dish with name
-     app.delete("/dish/:dishId", dish.delete);     
+     app.delete("/api/dish/:dishId", dish.delete);     
 
       // Delete all dishes
-     app.delete("/dish", dish.deleteAll);
+     app.delete("/api/dish", dish.deleteAll);
 }; 
