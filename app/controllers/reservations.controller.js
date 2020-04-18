@@ -48,24 +48,34 @@ exports.findPerRestaurant = (req, res) => {
 };
 
 exports.createReservation = (req, res) => {
-  Reservations.makeReservation(req.query, (err, data) => {
-    //console.log("Testing req.params");
-    console.log(req.query);
-    //console.log(req.query.custId);
 
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
 
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Could not create reservation with id ${req.query}.`
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving reservation with id " + req.query
-        });
-      }
-    } else res.send(data);
+  // Create a Customer
+  const reservation = new Reservations({
+    FK_branchId: req.body.FK_branchId,
+    resId: req.body.resId,
+    guestCount: req.body.guestCount,
+    requestedTime: req.body.requestedTime,
+    reservationSource: req.body.reservationSource,
+    custId: req.body.custId
   });
+
+  Reservations.makeReservation(reservation, (err, data) => {
+      //console.log("Testing req.params");
+      console.log(reservation);
+      if (err)
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the Customer."
+        });
+      else res.send(data);
+    });
 };
 
 //get reservation by customer
