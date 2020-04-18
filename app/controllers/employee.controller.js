@@ -22,6 +22,7 @@ exports.create = (req, res) => {
       yearsOfExperience: req.body.yearsOfExperience,
       phone: req.body.phone,
       salary: req.body.salary,
+      street: req.body.street,
       city: req.body.city,
       zipCode: req.body.zipCode,
       fName: req.body.fName,

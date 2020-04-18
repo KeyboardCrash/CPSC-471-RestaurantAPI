@@ -10,6 +10,7 @@ const Employee = function(employee) {
     this.yearsOfExperience = employee.yearsOfExperience;
     this.phone = employee.phone;
     this.salary = employee.salary;
+    this.street = employee.street;
     this.city = employee.city;
     this.zipCode = employee.zipCode;
     this.fName = employee.fName;
@@ -59,8 +60,8 @@ Employee.findBySSN = (SSN, result) => {
 
   Employee.updateBySSN = (SSN, employee, result) => {
     sql.query(
-      "UPDATE employee SET SSN = ?, branchID = ?, position = ?, yearsofExperience = ?, phone = ?, salary = ?, city = ?, zipCode = ?, fName = ?, lName = ? WHERE SSN = ?",
-      [employee.SSN, employee.branchID, employee.position, employee.yearsOfExperience, employee.phone, employee.salary, employee.city, employee.zipCode, employee.fName, employee.lName, SSN],
+      "UPDATE employee SET SSN = ?, branchID = ?, position = ?, yearsofExperience = ?, phone = ?, salary = ?, street = ?, city = ?, zipCode = ?, fName = ?, lName = ? WHERE SSN = ?",
+      [employee.SSN, employee.branchID, employee.position, employee.yearsOfExperience, employee.phone, employee.salary, employee.street, employee.city, employee.zipCode, employee.fName, employee.lName, SSN],
       (err, res) => {
         if (err) {
           console.log("error: ", err);
