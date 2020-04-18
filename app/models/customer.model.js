@@ -12,6 +12,7 @@ const Customer = function (customer) {
 	this.lname = customer.lname;
 };
 
+// Take parameters from the newCustomer object and insert fields into the database
 Customer.create = (newCustomer, result) => {
 	sql.query("INSERT INTO customers SET ?", newCustomer, (err, res) => {
 		if (err) {
@@ -25,6 +26,7 @@ Customer.create = (newCustomer, result) => {
 	});
 };
 
+// Find a customer by their customer id
 Customer.findById = (customerId, result) => {
 	sql.query(`SELECT * FROM customers WHERE id = ${customerId}`, (err, res) => {
 		if (err) {
@@ -44,6 +46,7 @@ Customer.findById = (customerId, result) => {
 	});
 };
 
+// Retrieve all the customers available in the database
 Customer.getAll = result => {
 	sql.query("SELECT * FROM customers", (err, res) => {
 		if (err) {
@@ -57,6 +60,7 @@ Customer.getAll = result => {
 	});
 };
 
+// Update the customer by id using a customer object passed in
 Customer.updateById = (id, customer, result) => {
 	sql.query(
 		"UPDATE customers SET email = ?, fname = ?, lname = ? WHERE id = ?",
@@ -110,7 +114,7 @@ Customer.remove = (id, result) => {
 
 };
 
-
+// Find the customers phone number by joining the customer and the phone table
 Customer.findPhoneById = (customerId, result) => {
 	sql.query(`SELECT cphone.phone FROM customers as c, customer_phone as cphone WHERE c.id = ${customerId} and c.id = cphone.customerId`, (err, res) => {
 		if (err) {
@@ -130,6 +134,7 @@ Customer.findPhoneById = (customerId, result) => {
 	});
 };
 
+// Find the customers address by joining the customer and the address table
 Customer.findAddrById = (customerId, result) => {
 	sql.query(`SELECT ca.address FROM customers as c, customer_address as ca WHERE id = ${customerId} and c.id = ca.customerId`, (err, res) => {
 		if (err) {

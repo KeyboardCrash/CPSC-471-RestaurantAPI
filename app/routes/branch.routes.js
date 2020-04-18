@@ -5,6 +5,8 @@
 module.exports = app => {
   const branch = require("../controllers/branch.controller.js");
 
+  // Define the paths used by branch
+
   app.get("/api/branch", branch.findAll);
 
   app.get("/api/branch/:branchId", branch.findOne);
