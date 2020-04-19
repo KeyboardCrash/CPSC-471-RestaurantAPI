@@ -1,6 +1,5 @@
 
-// customer controller, holds all the methods for dealing with customers in the db
-// Won't really have to touch this as it's just verifying data
+//Menu controller, holds all the methods for dealing with Menus in the db
 
 const Menu = require("../models/menu.model.js");
 
@@ -96,9 +95,6 @@ exports.addMenuDish = (req, res) => {
     } else res.send({message: `Dish ${req.params.dishID} was added onto menu with versionID ${req.params.menuVersionID}`});
   });
 };
-
-
-
 
 // Update a Menu by versionID 
 exports.update = (req, res) => {

@@ -1,9 +1,7 @@
 
 // Review controller, holds all the methods for dealing with reviews in the db
-// Won't really have to touch this as it's just verifying data
 
 const Review = require("../models/review.model.js");
-
 
 // Create and Save a new review
 exports.create = (req, res) => {
@@ -67,7 +65,7 @@ exports.findOne = (req, res) => {
   });
 };
 
-//Find by branch ID
+//Find all reviews by branch ID
 exports.findByBranchID = (req, res) => {
     Review.getBybranchID(req.params.branchID, (err, data) => {
       if (err) {
@@ -84,7 +82,7 @@ exports.findByBranchID = (req, res) => {
     });
   };
 
-//Find by source type
+//Find all reviews by source type
   exports.findBySource = (req, res) => {
     Review.getBySource(req.params.sourceType, (err, data) => {
       if (err) {

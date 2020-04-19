@@ -1,6 +1,6 @@
 
-// employee controller, holds all the methods for dealing with employees in the db
-// Won't really have to touch this as it's just verifying data
+
+//Employee controller, holds all the methods for dealing with employees in the db
 
 const Employee = require("../models/employee.model.js");
 
@@ -40,7 +40,7 @@ exports.create = (req, res) => {
     });
 };
 
-
+//Find all employees in database
 exports.findAll = (req, res) => {
   Employee.getAll((err, data) => {
     if (err)
@@ -52,6 +52,7 @@ exports.findAll = (req, res) => {
   });
 };
 
+//Find a specific employee by SSN
 exports.findOne = (req, res) => {
   Employee.findBySSN(req.params.SSN, (err, data) => {
     if (err) {
@@ -69,7 +70,7 @@ exports.findOne = (req, res) => {
 };
 
 
-// Update a Employee identified by the employeeId in the request
+//Update a Employee identified by the SSN in the request
 exports.update = (req, res) => {
     // Validate Request
     if (!req.body) {
@@ -97,7 +98,7 @@ exports.update = (req, res) => {
     );
 };
 
-// Delete a Employee with the specified employeeId in the request
+// Delete a Employee with the specified SSN in the request
 exports.delete = (req, res) => {
   Employee.remove(req.params.SSN, (err, data) => {
     if (err) {

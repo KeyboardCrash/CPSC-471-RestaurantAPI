@@ -1,6 +1,5 @@
 
-// Defines the routes that the api will have
-// add the method and controller method per route
+// Defines the employee routes that the api will have
 
 module.exports = app => {
     const employees = require("../controllers/employee.controller.js");
@@ -17,7 +16,7 @@ module.exports = app => {
     // Update a Customer with SSN
     app.put("/api/employees/:SSN", employees.update);
 
-    // Delete a Customer with employeeId
+    // Delete a Customer with SSN
     app.delete("/api/employees/:SSN", employees.delete);
 
   };

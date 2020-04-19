@@ -1,4 +1,5 @@
 
+// Model for menu 
 // When controller receives a call, it will check the model and run these sql queries
 
 const sql = require("./db.js");
@@ -54,9 +55,10 @@ Menu.getAll = result => {
   });
 };
 
+
 //Get all the dish information associated with a menu
 Menu.getDishes = (versionID, result) => {
-  sql.query(`SELECT D.name, D.description, D.price FROM dish AS D, listed_in, menu WHERE versionID =${versionID} and versionID = menuVersionID and dishID = id`, (err, res) => {
+  sql.query(`SELECT D.name, D.description, D.price FROM dish AS D, listed_in, menu WHERE versionID =${versionID} and versionID = menuVersionID and dishID = D.id`, (err, res) => {
     if (err) {
           console.log("error: ", err);
           result(err, null);
@@ -82,8 +84,6 @@ Menu.insertMenuDish = (menuVersionID, dishID, result) => {
 };
 
 
-
-
 //Update a menu
 Menu.updateByVersionID = (versionID, menu, result) => {
   sql.query(
@@ -107,6 +107,7 @@ Menu.updateByVersionID = (versionID, menu, result) => {
     }
   );
 };
+
 
 //Remove a menu by versionID
 Menu.remove = (versionID, result) => {  

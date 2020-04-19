@@ -1,4 +1,5 @@
 
+// Model for Online Statistics
 // When controller receives a call, it will check the model and run these sql queries
 
 const sql = require("./db.js");
@@ -29,7 +30,7 @@ OnlineStatistics.create = (newOnlineStatistics, result) => {
 
 
 //Find onlineStatistics by branchID
-OnlineStatistics.findBybranchID = (branchID, result) => {
+OnlineStatistics.getBybranchID = (branchID, result) => {
   sql.query(`SELECT * FROM online_statistics WHERE branchID=${branchID}`, (err, res) => {
     if (err)
     {
@@ -99,7 +100,7 @@ OnlineStatistics.getStatsByCoupons = (num, result) => {
   };
 
 
-//Update a onlineStatistics
+//Update an onlineStatistic
 OnlineStatistics.updateByStatisticID = (statisticID, onlineStatistics, result) => {
   sql.query(
     "UPDATE online_statistics SET statisticID = ?, branchID = ?, date = ?, websiteVisits = ?, mobileVisits = ?, couponsRedeemed = ? WHERE statisticID = ?",
@@ -142,8 +143,6 @@ OnlineStatistics.remove = (statisticID, result) => {
     result(null, res);
   });
 };
-
-
 
 module.exports = OnlineStatistics;
 
