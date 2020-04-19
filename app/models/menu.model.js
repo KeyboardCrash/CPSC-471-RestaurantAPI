@@ -67,6 +67,23 @@ Menu.getDishes = (versionID, result) => {
 });
 };
 
+//Add a new dish to the menu
+Menu.insertMenuDish = (menuVersionID, dishID, result) => {
+  sql.query(`INSERT INTO listed_in(menuVersionID, dishID) VALUES(${menuVersionID}, ${dishID})`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log(`dish ${dishID} was added onto menu ${menuVersionID} `, res);
+    result(null, res);
+  });
+};
+
+
+
+
 //Update a menu
 Menu.updateByVersionID = (versionID, menu, result) => {
   sql.query(
@@ -92,7 +109,9 @@ Menu.updateByVersionID = (versionID, menu, result) => {
 };
 
 //Remove a menu by versionID
-Menu.remove = (versionID, result) => {
+Menu.remove = (versionID, result) => {  
+
+  //Remove menu item AND listed_in items
   sql.query("DELETE FROM menu WHERE versionID = ?", versionID, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -108,10 +127,9 @@ Menu.remove = (versionID, result) => {
 
     console.log("deleted menu with versionID: ", versionID);
     result(null, res);
-  });
+  });  
+
 };
-
-
 
 module.exports = Menu;
 

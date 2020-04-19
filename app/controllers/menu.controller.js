@@ -79,6 +79,27 @@ exports.findAllDishes = (req, res) => {
   });
 };
 
+
+//Add a specific dish to a menu
+exports.addMenuDish = (req, res) => {
+  Menu.insertMenuDish(req.params.menuVersionID, req.params.dishID, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Menu ${req.params.menuVersionID} and/or dish ${req.params.dishID} not found.`
+        });
+      } else {
+        res.status(500).send({
+          message: `Error retrieving menu with versionID ${req.params.menuVersionID} and/or dish ${req.params.dishID}`
+        });
+      }
+    } else res.send({message: `Dish ${req.params.dishID} was added onto menu with versionID ${req.params.menuVersionID}`});
+  });
+};
+
+
+
+
 // Update a Menu by versionID 
 exports.update = (req, res) => {
   // Validate Request
@@ -123,3 +144,4 @@ Menu.remove(req.params.versionID, (err, data) => {
   } else res.send({ message: `Menu was deleted successfully!` });
 });
 };
+
