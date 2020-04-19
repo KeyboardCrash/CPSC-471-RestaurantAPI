@@ -1,6 +1,5 @@
 
-// customer controller, holds all the methods for dealing with customers in the db
-// Won't really have to touch this as it's just verifying data
+// Online Statistics controller, holds all the methods for dealing with Online Statistics in the db
 
 const OnlineStatistics = require("../models/onlineStatistics.model.js");
 
@@ -48,8 +47,8 @@ exports.findAll = (req, res) => {
 };
 
 //Find all statistics from a specific branchID
-exports.findOne = (req, res) => {
-  OnlineStatistics.findBybranchID(req.params.branchID, (err, data) => {
+exports.findByBranchID = (req, res) => {
+  OnlineStatistics.getBybranchID(req.params.branchID, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -101,7 +100,6 @@ exports.findAllByVisits = (req, res) => {
   };
 
 
-
 //Get all statistics greater than a specific number of coupons redeemed 
 exports.findAllByCoupons = (req, res) => {
     OnlineStatistics.getStatsByCoupons(req.params.num, (err, data) => {
@@ -119,6 +117,7 @@ exports.findAllByCoupons = (req, res) => {
     });
   };
 
+  
 // Update a OnlineStatistics by statisticID 
 exports.update = (req, res) => {
   // Validate Request

@@ -1,6 +1,5 @@
 
-// Defines the routes that the api will have
-// add the method and controller method per route
+// Defines the menu routes that the api will have
 
 module.exports = app => {
   const menu = require("../controllers/menu.controller.js");

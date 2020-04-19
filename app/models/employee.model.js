@@ -1,3 +1,5 @@
+
+// Model for employee
 // When controller receives a call, it will check the model and run these sql queries
 
 const sql = require("./db.js");
@@ -17,6 +19,7 @@ const Employee = function(employee) {
     this.lName = employee.lName; 
   };
 
+//Create an employee
 Employee.create = (newEmployee, result) => {
     sql.query("INSERT INTO employee SET ?", newEmployee, (err, res) => {
       if (err) {
@@ -30,6 +33,8 @@ Employee.create = (newEmployee, result) => {
     });
   };
 
+
+//Get all employees
 Employee.getAll = result => {
     sql.query("SELECT * FROM employee", (err, res) => {
       if (err) {
@@ -41,8 +46,10 @@ Employee.getAll = result => {
       console.log("All employee: ", res);
       result(null, res);
     });
-  };
+};
 
+
+//Find an employee by their SSN
 Employee.findBySSN = (SSN, result) => {
     sql.query(`SELECT * FROM employee WHERE ssn = ${SSN}`, (err, res) => {
       if (err) {
@@ -58,47 +65,49 @@ Employee.findBySSN = (SSN, result) => {
   };
 
 
-  Employee.updateBySSN = (SSN, employee, result) => {
-    sql.query(
-      "UPDATE employee SET SSN = ?, branchID = ?, position = ?, yearsofExperience = ?, phone = ?, salary = ?, street = ?, city = ?, zipCode = ?, fName = ?, lName = ? WHERE SSN = ?",
-      [employee.SSN, employee.branchID, employee.position, employee.yearsOfExperience, employee.phone, employee.salary, employee.street, employee.city, employee.zipCode, employee.fName, employee.lName, SSN],
-      (err, res) => {
-        if (err) {
-          console.log("error: ", err);
-          result(null, err);
-          return;
-        }
-  
-        if (res.affectedRows == 0) {
-          // not found Employee with the id
-          result({ kind: "not_found" }, null);
-          return;
-        }
-  
-        console.log("updated employee: ", { SSN: SSN, ...employee });
-        result(null, { SSN: SSN, ...employee });
-      }
-    );
-  };
-  
-  Employee.remove = (SSN, result) => {
-    sql.query("DELETE FROM employee WHERE SSN = ?", SSN, (err, res) => {
+//Update an employee by their SSN
+Employee.updateBySSN = (SSN, employee, result) => {
+  sql.query(
+    "UPDATE employee SET SSN = ?, branchID = ?, position = ?, yearsofExperience = ?, phone = ?, salary = ?, street = ?, city = ?, zipCode = ?, fName = ?, lName = ? WHERE SSN = ?",
+    [employee.SSN, employee.branchID, employee.position, employee.yearsOfExperience, employee.phone, employee.salary, employee.street, employee.city, employee.zipCode, employee.fName, employee.lName, SSN],
+    (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(null, err);
         return;
       }
-  
+
       if (res.affectedRows == 0) {
         // not found Employee with the id
         result({ kind: "not_found" }, null);
         return;
       }
-  
-      console.log("deleted employee with SSN: ", SSN);
-      result(null, res);
-    });
-  };
 
-  module.exports = Employee;
+      console.log("updated employee: ", { SSN: SSN, ...employee });
+      result(null, { SSN: SSN, ...employee });
+    }
+  );
+};
+
+//Remove an employee by SSN retrieval 
+Employee.remove = (SSN, result) => {
+  sql.query("DELETE FROM employee WHERE SSN = ?", SSN, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    if (res.affectedRows == 0) {
+      // not found Employee with the id
+      result({ kind: "not_found" }, null);
+      return;
+    }
+
+    console.log("deleted employee with SSN: ", SSN);
+    result(null, res);
+  });
+};
+
+module.exports = Employee;
   

@@ -1,3 +1,5 @@
+
+// Model for review
 // When controller receives a call, it will check the model and run these sql queries
 
 const sql = require("./db.js");
@@ -57,7 +59,7 @@ Review.findByreviewID = (reviewID, result) => {
   };
 
 
-//Get a review by branchID
+//Get all reviews by branchID
 Review.getBybranchID = (branchID, result) => {
     sql.query(`SELECT * FROM review WHERE branchID = ${branchID}`, (err, res) => {
       if (err) {
@@ -73,7 +75,7 @@ Review.getBybranchID = (branchID, result) => {
   };
 
 
-//Get a review by its platform type 
+//Get all reviews by platform type 
 Review.getBySource = (sourceType, result) => {
     sql.query(`SELECT * FROM review WHERE sourceType = ${sourceType}`, (err, res) => {
       if (err) {

@@ -1,6 +1,5 @@
 
-// Defines the routes that the api will have
-// add the method and controller method per route
+// Defines the review routes that the api will have
 
 module.exports = app => {
     const review = require("../controllers/review.controller.js");
@@ -8,7 +7,7 @@ module.exports = app => {
     //Create a new review
     app.post("/api/review", review.create);
 
-    // Retrieve all review
+    // Retrieve all reviews
     app.get("/api/review", review.findAll);
 
     //Retrieve reviews by branchID
@@ -17,13 +16,13 @@ module.exports = app => {
     //Retrieve reviews by sourceType
     app.get("/api/review/source/:sourceType", review.findBySource);
   
-    // Retrieve a single review with review reviewID
+    // Retrieve a single review with specific reviewID
     app.get("/api/review/:reviewID", review.findOne);  
 
     // Update a Review with reviewID
     app.put("/api/review/:reviewID", review.update);
 
-    // Delete a Review with reviewId
+    // Delete a Review with reviewID
     app.delete("/api/review/:reviewID", review.delete);
 
   };
