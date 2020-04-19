@@ -8,6 +8,9 @@ module.exports = app => {
   //Create a new menu 
   app.post("/api/menu", menu.create);
 
+  //Add new dish to menu
+  app.post("/api/menu/:menuVersionID/dish/:dishID", menu.addMenuDish);
+
   //Find every menu
   app.get("/api/menu", menu.findAll);
 
@@ -15,7 +18,7 @@ module.exports = app => {
   app.get("/api/menu/:versionID", menu.findOne);
 
   //Find dishes associated with a specific menu ID
-  app.get("/api/menu/:versionID/dishes", menu.findAllDishes);
+  app.get("/api/menu/:versionID/dishes", menu.findAllDishes); 
 
   //Update a menu by versionID
   app.put("/api/menu/:versionID", menu.update);
