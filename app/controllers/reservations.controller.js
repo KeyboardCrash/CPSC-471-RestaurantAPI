@@ -74,7 +74,7 @@ exports.createReservation = (req, res) => {
   });
 
   Reservations.makeReservation(reservation, (err, data) => {
-      //console.log("Testing req.params");
+      console.log("Testing reservations");
       console.log(reservation);
       if (err)
         res.status(500).send({

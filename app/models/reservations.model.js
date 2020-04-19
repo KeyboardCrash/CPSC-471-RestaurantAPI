@@ -61,22 +61,6 @@ Reservations.getPerRestaurant = (branchId, result) => {
 
 Reservations.makeReservation = (newReservation, result) => {
   //console.log(data.custId);
-
-  /*
-  sql.query("INSERT INTO reservations (FK_branchId, resId, guestCount, requestedTime, reservationSource, custId) "
-    // create new reservation type with the body response and parse with that?
-    + `VALUES (${data.FK_branchId}, ${data.resId}, ${data.guestCount}, '${data.requestedTime}', '${data.reservationSource}', ${data.custId})`
-    , (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-
-    console.log("Reservations: ", res);
-    result(null, res);
-  });
-  */
   sql.query("INSERT INTO reservations SET ?", newReservation, (err, res) => {
     if (err) {
       console.log("error: ", err);

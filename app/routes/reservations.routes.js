@@ -13,7 +13,7 @@ module.exports = app => {
 
   app.get("/api/reservations/customer/:custId", reservations.findResFromCust);
 
-  app.get("/api/reservations/delete/:resId", reservations.removeReservation);
+  app.delete("/api/reservations/:resId", reservations.removeReservation);
 
   app.post("/api/reservations/create", reservations.createReservation);
 
