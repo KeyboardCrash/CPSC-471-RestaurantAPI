@@ -89,6 +89,7 @@ exports.findCustomer = (req, res) => {
 // Update a Member identified by the memberId in the request
 exports.update = (req, res) => {
       console.log("request: ", req.query);
+      //console.log("request: ", req)
       // validate params
       if (!req.query.tier && !req.query.points && !req.query.lastUsed) {
             res.status(400).send({error: "No parameters passed in the request, no changes in the database"})
