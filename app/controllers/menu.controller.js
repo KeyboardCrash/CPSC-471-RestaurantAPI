@@ -81,19 +81,30 @@ exports.findAllDishes = (req, res) => {
 
 //Add a specific dish to a menu
 exports.addMenuDish = (req, res) => {
-  Menu.insertMenuDish(req.params.menuVersionID, req.params.dishID, (err, data) => {
-    if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          message: `Menu ${req.params.menuVersionID} and/or dish ${req.params.dishID} not found.`
-        });
-      } else {
-        res.status(500).send({
-          message: `Error retrieving menu with versionID ${req.params.menuVersionID} and/or dish ${req.params.dishID}`
-        });
-      }
-    } else res.send({message: `Dish ${req.params.dishID} was added onto menu with versionID ${req.params.menuVersionID}`});
-  });
+
+  // Validate Request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  } 
+  Menu.insertMenuDish(
+    req.params.menuVersionID,
+    req.body.dishID,
+    (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found Menu with versionID ${req.params.versionID}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error updating Menu with versionID " + req.params.versionID
+          });
+        }
+      } else res.send({ message: `Dish ${req.body.dishID} was added to menu ${req.params.menuVersionID} successfully!` });
+    }
+  );
 };
 
 // Update a Menu by versionID 
