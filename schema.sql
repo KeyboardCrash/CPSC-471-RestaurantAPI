@@ -164,7 +164,8 @@ CREATE TABLE `employee` (
   `position` varchar(45) NOT NULL,
   `yearsOfExperience` int NOT NULL,
   `phone` varchar(45) NOT NULL,
-  `salary` float NOT NULL,
+  `salary` varchar(45) NOT NULL,
+  `street` varchar(45) NOT NULL,
   `city` varchar(45) NOT NULL,
   `zipCode` varchar(45) NOT NULL,
   `fName` varchar(45) NOT NULL,
@@ -176,15 +177,6 @@ CREATE TABLE `employee` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `employee`
---
-
-LOCK TABLES `employee` WRITE;
-/*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES (1,1,'Cashier',1,'123456',20,'Calgary','1234','Bacon','McNuggets'),(2,1,'Waiter',2,'234121',30,'Edmonton','1234','Wendys','Savage'),(3,2,'Waitress',3,'123121',50,'Vancouver','5251','Jeeves','TheSearchEngine'),(4,1,'Manager',15,'931278',100,'Toronto','93252','Geico','Lizard');
-/*!40000 ALTER TABLE `employee` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `in_restaurant`
@@ -289,12 +281,13 @@ DROP TABLE IF EXISTS `listed_in`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `listed_in` (
-  `dishId` int NOT NULL,
-  `menuVersionId` int NOT NULL,
-  PRIMARY KEY (`dishId`,`menuVersionId`),
-  KEY `listMenuVerId_idx` (`menuVersionId`),
-  CONSTRAINT `listDishID` FOREIGN KEY (`dishId`) REFERENCES `dish` (`id`),
-  CONSTRAINT `listMenuVerId` FOREIGN KEY (`menuVersionId`) REFERENCES `menu` (`versionId`)
+  `menuVersionID` int NOT NULL,
+  `dishID` int NOT NULL,
+  PRIMARY KEY (`dishID`,`menuVersionID`),
+  KEY `listMenuVerId_idx` (`menuVersionID`),
+  KEY `dish_ID_idx` (`dishID`),
+  CONSTRAINT `dish_ID` FOREIGN KEY (`dishID`) REFERENCES `dish` (`id`),
+  CONSTRAINT `listMenuVerId` FOREIGN KEY (`menuVersionID`) REFERENCES `menu` (`versionID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -326,13 +319,55 @@ DROP TABLE IF EXISTS `menu`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `menu` (
-  `versionId` int NOT NULL AUTO_INCREMENT,
+  `versionID` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `dateCreated` date NOT NULL,
   `dateUpdated` date NOT NULL,
-  PRIMARY KEY (`versionId`)
+  PRIMARY KEY (`versionID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `online_statistics`
+--
+
+DROP TABLE IF EXISTS `online_statistics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `online_statistics` (
+  `statisticID` int NOT NULL,
+  `branchID` int NOT NULL,
+  `date` date NOT NULL,
+  `websiteVisits` int NOT NULL,
+  `mobileVisits` int NOT NULL,
+  `couponsRedeemed` int NOT NULL,
+  PRIMARY KEY (`statisticID`),
+  KEY `branchid_stat_idx` (`branchID`),
+  CONSTRAINT `branchid_stat` FOREIGN KEY (`branchID`) REFERENCES `branch` (`branchID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `review`
+--
+
+DROP TABLE IF EXISTS `review`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `review` (
+  `reviewID` int NOT NULL,
+  `branchID` int NOT NULL,
+  `reviewerName` varchar(45) NOT NULL,
+  `description` varchar(500) NOT NULL,
+  `rating` double NOT NULL,
+  `sourceType` varchar(45) NOT NULL,
+  `sourceName` varchar(45) NOT NULL,
+  PRIMARY KEY (`reviewID`),
+  KEY `branchID_review_idx` (`branchID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
 
 --
 -- Table structure for table `mobile`
