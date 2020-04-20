@@ -121,12 +121,12 @@ Order.getAllOrdersByCustomer = (custID, result) => {
             // customer has orders
             else if (res.length > 0) {
 
-                  let test = res;
+                  let orders = res;
                   let orderResult = []
 
                   // customer may have multiple order entries
                   // for each order, get the list of dishes ordered for that order
-                  async.forEachOf(test, (order, i, inner_callback) => {
+                  async.forEachOf(orders, (order, i, inner_callback) => {
                         // get all dish orders of this order
                         Order.getDishOrder(order.billingNo, (err, res) => {
                               if (err) {
@@ -137,16 +137,16 @@ Order.getAllOrdersByCustomer = (custID, result) => {
                               }
                               // if response returned one or more dish entries
                               if (res.length > 0) {
-                                    test[i].orderlist = res;
-                                    orderResult.push({ billingNo: test[i].billingNo, info: test[i] })
+                                    orders[i].orderlist = res;
+                                    orderResult.push({ billingNo: orders[i].billingNo, info: orders[i] })
 
                               } else {
                                     // otherwise, this order's order list is empty
-                                    test[i].orderlist = [];
-                                    orderResult.push({ billingNo: test[i].billingNo, info: test[i] })
+                                    orders[i].orderlist = [];
+                                    orderResult.push({ billingNo: orders[i].billingNo, info: orders[i] })
 
                               }
-                              console.log("dish order list: ", test[i]);
+                              console.log("dish order list: ", orders[i]);
                               inner_callback(null);
                         });
                   }, (err) => {
@@ -154,7 +154,7 @@ Order.getAllOrdersByCustomer = (custID, result) => {
                               console.log("error: ", err);
                               result(err, null);
                         } else {
-                              console.log("orders: ", test);
+                              console.log("orders: ", orders);
                               result(null, orderResult);
                         }
                   });
@@ -281,19 +281,22 @@ Order.delOrder = (orderNo, result) => {
       // updates the numOfOrders for all the dishes in the order,
       // deletes all entries of dishes in its order_list
       // then deletes the order itself
-      sql.query(`call restaurantdb.deleteOrder(${orderNo});`, (err, res) => {
+      Order.findById(orderNo, (err, res) => {     
+            // find out first if the order with the given id exists
             if (err) {
                   console.log("error: ", err)
                   result(err, null)
                   return
-            }
-            // no affected rows in the query result
-            if (res.affectedRows == 0) {
-                  // did not find order
-                  result({kind: "not_found"}, null)
-                  return
-            }
-            result(null, res)
+            }               
+            sql.query(`call restaurantdb.deleteOrder(${orderNo});`, (err, res) => {
+                  if (err) {
+                        console.log("error: ", err)
+                        result(err, null)
+                        return
+                  }
+                  console.log("result: ", res);
+                  result(null, "Successfully deleted")                           
+            });
       });
 };
 
