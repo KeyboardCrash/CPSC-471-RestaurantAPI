@@ -1,6 +1,12 @@
 # CPSC-471-RestaurantAPI
 A CPSC 471 Project offering a simple Restaurant API system using Njs, Express and MySQL.
 
+# Setting up mySQL environment
+1. Open up mySQL and run everything in "schema.sql" as a query (this will generate all tables for restaurantdb)
+2. Run the following queries:
+> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+> flush privileges;
+
 # Installing the Project
 1. git clone the repository
 2. run the command 'npm install'
