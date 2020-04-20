@@ -8,7 +8,7 @@ module.exports = app => {
   app.post("/api/menu", menu.create);
 
   //Add new dish to menu
-  app.post("/api/menu/:menuVersionID/dish/:dishID", menu.addMenuDish);
+  app.post("/api/menu/:menuVersionID/addDish", menu.addMenuDish);
 
   //Find every menu
   app.get("/api/menu", menu.findAll);
